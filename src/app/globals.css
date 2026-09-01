@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-serif: var(--font-lora);
+}
+
+body {
+  background: #fdfcf8;
+  color: #1a1a1a;
+  font-family: var(--font-lora), Georgia, "Times New Roman", serif;
+}

@@ -1,0 +1,101 @@
+export const metadata = {
+  title: "Does thyroid function predict metabolic health? Testing a popular health framework against NHANES data",
+  date: "2026-08-29",
+  summary:
+    "A survey-weighted analysis of NHANES thyroid panels testing Ray Peat's bioenergetic hypotheses — three of four pre-registered predictions failed, and the one significant result ran backwards.",
+};
+
+{/* TODO: Replace this opening paragraph with your own — why you picked this
+    project, what drew you to the question, what you already knew (or didn't)
+    about thyroid physiology going in. This is the recruiter's first
+    impression of how you think, not just what you found. */}
+
+I tested a set of health claims from Ray Peat, an independent researcher
+whose ideas about thyroid function and metabolism have a large online
+following, against sixteen years of national health survey data. The claims
+are specific and falsifiable, which made them a good excuse to build a full
+survey-weighted analysis pipeline: multi-cycle NHANES pooling, design-based
+regression, and correction for testing multiple hypotheses at once.
+
+**The short version: it mostly didn't hold up.** Three of four pre-registered
+hypotheses were not supported, and the one statistically significant result
+ran in the opposite direction from what the framework predicts.
+
+## The question
+
+Peat's framework argues that efficient thyroid hormone conversion (T4 → T3)
+and adequate free T3 drive a more efficient, "pro-metabolic" physiology —
+protecting against high triglycerides, inflammation, and other markers of
+metabolic dysfunction. I turned that into four pre-registered hypotheses and
+tested each one against [NHANES](https://www.cdc.gov/nchs/nhanes/) data
+(2007–2012, the three cycles with a full thyroid panel), using
+non-pregnant adults age 20+ with no thyroid disease or thyroid medication use
+(pooled n=3,459).
+
+## Why the method matters here
+
+{/* TODO: this section is a good place for YOUR commentary on why you made
+    these methodological choices — what you'd have gotten wrong if you'd
+    skipped survey weights or multiple-comparison correction, e.g. */}
+
+A few choices in the analysis were deliberate, not defaults:
+
+- **Design-based survey weights, strata, and PSUs** — NHANES is not a simple
+  random sample, so unweighted statistics would misrepresent the U.S.
+  population.
+- **Pooling across three survey cycles** using the standard NHANES
+  divide-by-number-of-cycles weighting approach, to get enough sample size
+  for the less common outcomes (e.g. metabolic syndrome).
+- **FDR and Bonferroni correction across all four hypotheses' primary
+  tests** — evaluating four hypotheses at p \< 0.05 without correction
+  overstates the evidence.
+
+## What I found
+
+| # | Hypothesis | Result |
+|---|---|---|
+| H1 | Higher FT3/FT4 ratio → lower triglycerides | **Falsified** — significant, opposite direction, survives correction |
+| H2 | Free T3 outperforms TSH at predicting metabolic syndrome | **Ambiguous** — narrow edge on AUC/AIC, but TSH has the significant individual coefficient |
+| H3 | Lower free T3 → higher CRP (inflammation) | **Not supported after correction** |
+| H4 | Higher free T3 → lower total cholesterol | **Null** |
+
+Only H1 survived correction for testing four hypotheses — and it's the one
+result that runs clearly counter to the framework: a higher free-T3/free-T4
+ratio is associated with **higher**, not lower, triglycerides (+14.9 mg/dL
+per unit ratio, p \< 0.001, robust to BMI adjustment).
+
+<img
+  src="/writing/bioenergetics/summary_all_hypotheses.png"
+  alt="Primary coefficient across all four hypotheses"
+/>
+
+<img
+  src="/writing/bioenergetics/multiplicity_correction.png"
+  alt="Raw vs. corrected p-values across all four hypotheses"
+/>
+
+## My take
+
+{/* TODO: this is the most important section for a recruiter reading this —
+    write 2-4 paragraphs in your own voice on what you make of these results.
+    Some prompts:
+    - Were you surprised the headline result ran backwards?
+    - What does it say about testing popular health claims rigorously vs.
+      taking them at face value?
+    - What would change your mind, or what's the strongest objection to your
+      own analysis?
+    - What was the hardest technical part of this project for you? */}
+
+## What I'd do differently
+
+{/* TODO: a short, honest paragraph on limitations or next steps signals
+    seniority to reviewers — e.g. cross-sectional data can't establish
+    causation, CRP only exists in 2 of the 3 cycles, etc. */}
+
+## Full analysis
+
+The complete pipeline, notebooks, and writeup — including two more
+hypotheses not covered here — are on GitHub:
+[Project Bioenergetics](https://github.com/yourusername/Project-Bioenergetics).
+
+{/* TODO: swap in your actual repo URL. */}
