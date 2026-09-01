@@ -1,4 +1,3 @@
-// Fill these in with your real details — everything here is a placeholder.
 export const siteConfig = {
   name: "Connor Day",
   role: "Data Science Student",

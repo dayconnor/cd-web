@@ -6,31 +6,32 @@ export const metadata = {
   draft: true,
 };
 
-{/* TODO: Replace this opening paragraph with your own — why you picked this
-    project, what drew you to the question, what you already knew (or didn't)
-    about thyroid physiology going in. This is the recruiter's first
-    impression of how you think, not just what you found. */}
-
-I tested a set of health claims from Ray Peat, an independent researcher
-whose ideas about thyroid function and metabolism have a large online
-following, against sixteen years of national health survey data. The claims
-are specific and falsifiable, which made them a good excuse to build a full
-survey-weighted analysis pipeline: multi-cycle NHANES pooling, design-based
-regression, and correction for testing multiple hypotheses at once.
-
-In this project, I tested some claims derived from the thinkings of Ray Peat, a 
-prominent researcher with a Ph.D. in biology from the University of Oregon, and some opinions 
+In this project, I tested some claims derived from the thinkings and opinions of Ray Peat, 
+a prominent researcher with a Ph.D. in biology from the University of Oregon, and some opinions 
 from the Peat-sphere on X/Twitter. Peat's central claim is that energy and structure 
 are interdependent at every level.
 
-**The short version: it mostly didn't hold up.** Three of four pre-registered
+In the past few years, Ray Peat's ideologies have been pushed prominently on social media,
+becoming the topic of many widespread conversations from health and gym-bros alike. His takes
+on dieting have become widespread and the center of many debates.
+
+Using NHANES data, I decided to take a look and see if some of the claims made online and by Peat
+himself live up their glory or fall short. It is important to note that the NHANES data does have 
+a self-reporting bias, meaning that, things like dietary logs and lifestyle questions rely purely on
+memory and honesty. Which, as we know, most people are willing to fabricate these questions to make
+themselves appear more healthy than what they actually are. Further, dietary logs do not contain 
+ingredients listed in all the foods people consume. One of Peat's central claims is that PUFA (Polyunsaturated fatty acids)
+is the one of the main causes of inflammation and suppresses thyroid functionality. Many common foods have high PUFA 
+content and could be one the main causes for restraint in the NHANES data.
+
+**The short version is that the hypotheses tested, mostly, didn't hold up.** Three of four pre-registered
 hypotheses were not supported, and the one statistically significant result
 ran in the opposite direction from what the framework predicts.
 
 ## The question
 
 Peat's framework argues that efficient thyroid hormone conversion (T4 → T3)
-and adequate free T3 drive a more efficient, "pro-metabolic" physiology —
+and adequate free T3 drive a more efficient, "pro-metabolic" physiology,
 protecting against high triglycerides, inflammation, and other markers of
 metabolic dysfunction. I turned that into four pre-registered hypotheses and
 tested each one against [NHANES](https://www.cdc.gov/nchs/nhanes/) data
@@ -38,17 +39,13 @@ tested each one against [NHANES](https://www.cdc.gov/nchs/nhanes/) data
 non-pregnant adults age 20+ with no thyroid disease or thyroid medication use
 (pooled n=3,459).
 
-## Why the method matters here
+## The methodology
 
-{/* TODO: this section is a good place for YOUR commentary on why you made
-    these methodological choices — what you'd have gotten wrong if you'd
-    skipped survey weights or multiple-comparison correction, e.g. */}
-
-A few choices in the analysis were deliberate, not defaults:
+Some choices in the analysis that I made:
 
 - **Design-based survey weights, strata, and PSUs** — NHANES is not a simple
   random sample, so unweighted statistics would misrepresent the U.S.
-  population.
+  population. See the note prior for more details regarding NHANES data bias.
 - **Pooling across three survey cycles** using the standard NHANES
   divide-by-number-of-cycles weighting approach, to get enough sample size
   for the less common outcomes (e.g. metabolic syndrome).
@@ -60,10 +57,10 @@ A few choices in the analysis were deliberate, not defaults:
 
 | # | Hypothesis | Result |
 |---|---|---|
-| H1 | Higher FT3/FT4 ratio → lower triglycerides | **Falsified** — significant, opposite direction, survives correction |
+| H1 | Higher FT3/FT4 ratio -> lower triglycerides | **Falsified** — significant, opposite direction, survives correction |
 | H2 | Free T3 outperforms TSH at predicting metabolic syndrome | **Ambiguous** — narrow edge on AUC/AIC, but TSH has the significant individual coefficient |
-| H3 | Lower free T3 → higher CRP (inflammation) | **Not supported after correction** |
-| H4 | Higher free T3 → lower total cholesterol | **Null** |
+| H3 | Lower free T3 -> higher CRP (inflammation) | **Not supported after correction** |
+| H4 | Higher free T3 -> lower total cholesterol | **Null** |
 
 Only H1 survived correction for testing four hypotheses — and it's the one
 result that runs clearly counter to the framework: a higher free-T3/free-T4
@@ -80,28 +77,12 @@ per unit ratio, p \< 0.001, robust to BMI adjustment).
   alt="Raw vs. corrected p-values across all four hypotheses"
 />
 
-## My take
+## My personal opinion on the results
 
-{/* TODO: this is the most important section for a recruiter reading this —
-    write 2-4 paragraphs in your own voice on what you make of these results.
-    Some prompts:
-    - Were you surprised the headline result ran backwards?
-    - What does it say about testing popular health claims rigorously vs.
-      taking them at face value?
-    - What would change your mind, or what's the strongest objection to your
-      own analysis?
-    - What was the hardest technical part of this project for you? */}
-
-## What I'd do differently
-
-{/* TODO: a short, honest paragraph on limitations or next steps signals
-    seniority to reviewers — e.g. cross-sectional data can't establish
-    causation, CRP only exists in 2 of the 3 cycles, etc. */}
+To be continued
 
 ## Full analysis
 
 The complete pipeline, notebooks, and writeup — including two more
 hypotheses not covered here — are on GitHub:
-[Project Bioenergetics](https://github.com/yourusername/Project-Bioenergetics).
-
-{/* TODO: swap in your actual repo URL. */}
+[Project Bioenergetics](https://github.com/dayconnor/nhanes-bioenergetics).

@@ -10,11 +10,9 @@ export default async function Home() {
       <h1 className="mb-1 text-2xl font-bold">{siteConfig.name}</h1>
       <p className="mb-8 text-neutral-600">{siteConfig.role}</p>
 
-      {/* TODO: replace with your real bio — a few sentences on your background,
-          what you work on, and what you're looking for. */}
       <p className="mb-5 leading-7">
-        I&apos;m a fourth-year Data Science student studying at the University of California, San Diego.
-        
+        I&apos;m a fourth-year Data Science student studying at the University
+        of California, San Diego.
       </p>
 
       {writing.length > 0 && (

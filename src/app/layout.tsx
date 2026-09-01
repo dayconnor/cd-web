@@ -30,12 +30,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/gallery" className="underline decoration-1 underline-offset-2">
                 Gallery
               </Link>
-              <a
-                href={`mailto:${siteConfig.email}`}
-                className="underline decoration-1 underline-offset-2"
-              >
+              <Link href="/contact" className="underline decoration-1 underline-offset-2">
                 Contact
-              </a>
+              </Link>
             </nav>
           </div>
         </header>
