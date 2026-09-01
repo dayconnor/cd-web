@@ -13,13 +13,8 @@ export default async function Home() {
       {/* TODO: replace with your real bio — a few sentences on your background,
           what you work on, and what you're looking for. */}
       <p className="mb-5 leading-7">
-        I&apos;m a rising fourth-year Data Science student. This is a placeholder
-        bio — swap it out in{" "}
-        <code className="rounded bg-neutral-100 px-1 py-0.5 font-mono text-[0.9em]">
-          src/app/page.tsx
-        </code>{" "}
-        for a couple of sentences on your background, the kind of problems you
-        like working on, and what you&apos;re looking for.
+        I&apos;m a fourth-year Data Science student studying at the University of California, San Diego.
+        
       </p>
 
       {writing.length > 0 && (

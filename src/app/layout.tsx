@@ -27,6 +27,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/writing" className="underline decoration-1 underline-offset-2">
                 Writing
               </Link>
+              <Link href="/gallery" className="underline decoration-1 underline-offset-2">
+                Gallery
+              </Link>
               <a
                 href={`mailto:${siteConfig.email}`}
                 className="underline decoration-1 underline-offset-2"
