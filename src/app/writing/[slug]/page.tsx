@@ -1,7 +1,8 @@
 import { getWritingSlugs, type WritingMeta } from "@/lib/writing";
 
-export function generateStaticParams() {
-  return getWritingSlugs().map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  const slugs = await getWritingSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export const dynamicParams = false;

@@ -22,20 +22,24 @@ export default async function Home() {
         like working on, and what you&apos;re looking for.
       </p>
 
-      <h2 className="mt-10 mb-4 text-lg font-bold">Writing</h2>
-      <ul className="space-y-4">
-        {writing.map((post) => (
-          <li key={post.slug}>
-            <Link
-              href={`/writing/${post.slug}`}
-              className="font-semibold underline decoration-1 underline-offset-2"
-            >
-              {post.title}
-            </Link>
-            <p className="text-sm text-neutral-600">{post.summary}</p>
-          </li>
-        ))}
-      </ul>
+      {writing.length > 0 && (
+        <>
+          <h2 className="mt-10 mb-4 text-lg font-bold">Writing</h2>
+          <ul className="space-y-4">
+            {writing.map((post) => (
+              <li key={post.slug}>
+                <Link
+                  href={`/writing/${post.slug}`}
+                  className="font-semibold underline decoration-1 underline-offset-2"
+                >
+                  {post.title}
+                </Link>
+                <p className="text-sm text-neutral-600">{post.summary}</p>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
