@@ -1,7 +1,7 @@
-import { getWritingSlugs, type WritingMeta } from "@/lib/writing";
+import { getProjectSlugs, type ProjectMeta } from "@/lib/projects";
 
 export async function generateStaticParams() {
-  const slugs = await getWritingSlugs();
+  const slugs = await getProjectSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
@@ -13,21 +13,21 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { metadata } = (await import(`@/content/writing/${slug}.mdx`)) as {
-    metadata: WritingMeta;
+  const { metadata } = (await import(`@/content/projects/${slug}.mdx`)) as {
+    metadata: ProjectMeta;
   };
   return { title: metadata.title, description: metadata.summary };
 }
 
-export default async function WritingPost({
+export default async function ProjectPost({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
   const { default: Post, metadata } = (await import(
-    `@/content/writing/${slug}.mdx`
-  )) as { default: React.ComponentType; metadata: WritingMeta };
+    `@/content/projects/${slug}.mdx`
+  )) as { default: React.ComponentType; metadata: ProjectMeta };
 
   return (
     <article>

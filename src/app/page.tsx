@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
-import { getAllWriting } from "@/lib/writing";
+import { getAllProjects } from "@/lib/projects";
 
 export default async function Home() {
-  const writing = await getAllWriting();
+  const projects = await getAllProjects();
 
   return (
     <div>
@@ -15,19 +15,19 @@ export default async function Home() {
         of California, San Diego.
       </p>
 
-      {writing.length > 0 && (
+      {projects.length > 0 && (
         <>
-          <h2 className="mt-10 mb-4 text-lg font-bold">Writing</h2>
+          <h2 className="mt-10 mb-4 text-lg font-bold">Projects</h2>
           <ul className="space-y-4">
-            {writing.map((post) => (
-              <li key={post.slug}>
+            {projects.map((project) => (
+              <li key={project.slug}>
                 <Link
-                  href={`/writing/${post.slug}`}
+                  href={`/projects/${project.slug}`}
                   className="font-semibold underline decoration-1 underline-offset-2"
                 >
-                  {post.title}
+                  {project.title}
                 </Link>
-                <p className="text-sm text-neutral-600">{post.summary}</p>
+                <p className="text-sm text-neutral-600">{project.summary}</p>
               </li>
             ))}
           </ul>

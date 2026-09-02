@@ -1,38 +1,38 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const WRITING_DIR = path.join(process.cwd(), "src/content/writing");
+const PROJECTS_DIR = path.join(process.cwd(), "src/content/projects");
 
-export type WritingMeta = {
+export type ProjectMeta = {
   title: string;
   date: string;
   summary: string;
   draft?: boolean;
 };
 
-export type WritingEntry = WritingMeta & { slug: string };
+export type ProjectEntry = ProjectMeta & { slug: string };
 
 function allSlugs(): string[] {
   return fs
-    .readdirSync(WRITING_DIR)
+    .readdirSync(PROJECTS_DIR)
     .filter((file) => file.endsWith(".mdx"))
     .map((file) => file.replace(/\.mdx$/, ""));
 }
 
-async function loadEntry(slug: string): Promise<WritingEntry> {
-  const { metadata } = (await import(`@/content/writing/${slug}.mdx`)) as {
-    metadata: WritingMeta;
+async function loadEntry(slug: string): Promise<ProjectEntry> {
+  const { metadata } = (await import(`@/content/projects/${slug}.mdx`)) as {
+    metadata: ProjectMeta;
   };
   return { ...metadata, slug };
 }
 
 // Only published (non-draft) slugs — safe to link to and generate pages for.
-export async function getWritingSlugs(): Promise<string[]> {
+export async function getProjectSlugs(): Promise<string[]> {
   const entries = await Promise.all(allSlugs().map(loadEntry));
   return entries.filter((entry) => !entry.draft).map((entry) => entry.slug);
 }
 
-export async function getAllWriting(): Promise<WritingEntry[]> {
+export async function getAllProjects(): Promise<ProjectEntry[]> {
   const entries = await Promise.all(allSlugs().map(loadEntry));
   return entries
     .filter((entry) => !entry.draft)
