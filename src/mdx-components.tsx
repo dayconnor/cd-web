@@ -52,13 +52,6 @@ const components: MDXComponents = {
     </code>
   ),
   hr: () => <hr className="my-10 border-neutral-300" />,
-  iframe: (props) => (
-    <iframe
-      {...props}
-      className="mb-5 w-full rounded border border-neutral-200"
-      loading="lazy"
-    />
-  ),
 };
 
 export function useMDXComponents(): MDXComponents {

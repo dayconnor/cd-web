@@ -29,13 +29,13 @@ median urban population density (2,380 persons per square mile) as the cutoff.
 Outage duration is heavily right-skewed — most outages resolve in under
 5,000 minutes, but some extreme cases run past 100,000 minutes.
 
-<iframe src="/projects/power-outages/plot1.html" height="450"></iframe>
+<iframe src="/projects/power-outages/plot1.html" height="450" width="100%"></iframe>
 
 Comparing the two density groups directly, high-density states show
 slightly shorter outage durations on average, but both groups have wide
 spread:
 
-<iframe src="/projects/power-outages/plot3_zoom.html" height="450"></iframe>
+<iframe src="/projects/power-outages/plot3_zoom.html" height="450" width="100%"></iframe>
 
 One aggregate result stood out: outages caused by **equipment failure** last
 roughly 10x longer in low-density states (4,672.6 min) than high-density
@@ -55,9 +55,9 @@ tests:
 - Missingness does **not** depend on a state's year-over-year GDP change
   (p ≈ 0.600), which has no logical link, and the test found none.
 
-<iframe src="/projects/power-outages/fig_miss1.html" height="450"></iframe>
+<iframe src="/projects/power-outages/fig_miss1.html" height="450" width="100%"></iframe>
 
-<iframe src="/projects/power-outages/fig_miss2.html" height="450"></iframe>
+<iframe src="/projects/power-outages/fig_miss2.html" height="450" width="100%"></iframe>
 
 ## Hypothesis test: does density actually predict duration?
 
@@ -70,7 +70,7 @@ A permutation test (10,000 permutations, difference in means) gave
 difference in the raw data doesn't clear the bar for statistical
 significance, even though it looked suggestive in the EDA above.
 
-<iframe src="/projects/power-outages/fig_hyp.html" height="450"></iframe>
+<iframe src="/projects/power-outages/fig_hyp.html" height="450" width="100%"></iframe>
 
 ## Predicting outage duration
 
@@ -97,7 +97,7 @@ Result: **p = 0.35** — fail to reject. The model performs comparably across
 both groups; it isn't systematically worse for the states that might need
 accurate predictions most.
 
-<iframe src="/projects/power-outages/fig_fair.html" height="450"></iframe>
+<iframe src="/projects/power-outages/fig_fair.html" height="450" width="100%"></iframe>
 
 ## Full analysis
 
