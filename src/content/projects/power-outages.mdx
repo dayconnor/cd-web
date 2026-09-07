@@ -6,10 +6,6 @@ export const metadata = {
   draft: true,
 };
 
-{/* TODO: Replace this opening with your own — why this dataset, what made
-    the question interesting to you, anything from the DSC80 course context
-    worth mentioning. */}
-
 Using 1,534 major U.S. power outage events from 2000–2016, I looked at
 whether population density predicts how long an outage lasts — do
 high-density states recover faster because they have more infrastructure and
@@ -64,10 +60,6 @@ tests:
 
 <iframe src="/projects/power-outages/fig_miss2.html" height="450"></iframe>
 
-{/* TODO: this is a good spot for your own commentary on why the missingness
-    check matters here — e.g. what would've gone wrong if CUSTOMERS.AFFECTED
-    were dropped/imputed naively without checking this first. */}
-
 ## Hypothesis test: does density actually predict duration?
 
 **H0:** Outage duration is the same for high- and low-density states — any
@@ -96,9 +88,6 @@ versus a mean-only baseline of 7,838.99 min.
 `MONTH`, `ANOMALY.LEVEL`, `NERC.REGION`) — test RMSE **6,888.27 min**, a
 further ~530-minute improvement over the baseline.
 
-{/* TODO: your take on the model results — is this error margin good enough
-    to be useful in practice? What would you add with more time/data? */}
-
 ## Is the model fair across density groups?
 
 **H0:** the model's RMSE is the same for high- and low-density states.
@@ -110,12 +99,6 @@ both groups; it isn't systematically worse for the states that might need
 accurate predictions most.
 
 <iframe src="/projects/power-outages/fig_fair.html" height="450"></iframe>
-
-## My take
-
-{/* TODO: write this section yourself — what surprised you, what you'd
-    change about the analysis, and what the practical takeaway is for
-    someone who actually plans emergency response. */}
 
 ## Full analysis
 
