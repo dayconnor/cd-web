@@ -2,8 +2,7 @@ export const metadata = {
   title: "Power Outages and Population Density in the United States",
   date: "2026-06-05",
   summary:
-    "Do higher-density states recover from power outages faster? A permutation-tested EDA and a Random Forest outage-duration model on 16 years of U.S. outage data say: not significantly.",
-  draft: true,
+    "Do higher-density states recover from power outages faster? A permutation-tested EDA and a Random Forest outage-duration model on 16 years of U.S. outage data show that it may not be significant.",
 };
 
 Using 1,534 major U.S. power outage events from 2000–2016, I looked at
@@ -46,15 +45,15 @@ longest category for both groups.
 
 ## Is the missing data a problem?
 
-`CUSTOMERS.AFFECTED` has missing values, and whether that's a data quality
-issue worth worrying about depends on *why* it's missing. Two permutation
+`CUSTOMERS.AFFECTED` has missing values, and whether that's an issue worth 
+worrying about depends on *why* it's missing. I performed two permutation
 tests:
 
-- Missingness **does** depend on `CAUSE.CATEGORY` (p \< 0.001) — outages
+- Missingness **does** depend on `CAUSE.CATEGORY` (p \< 0.001), where outages
   from causes like intentional attacks are less likely to have a reported
   customer count.
 - Missingness does **not** depend on a state's year-over-year GDP change
-  (p ≈ 0.600) — no logical link, and the test found none.
+  (p ≈ 0.600), which has no logical link, and the test found none.
 
 <iframe src="/projects/power-outages/fig_miss1.html" height="450"></iframe>
 
@@ -62,12 +61,12 @@ tests:
 
 ## Hypothesis test: does density actually predict duration?
 
-**H0:** Outage duration is the same for high- and low-density states — any
+**H0:** Outage duration is the same for high and low density states. Any
 difference is random.
 **H1:** High-density states have shorter outage durations.
 
 A permutation test (10,000 permutations, difference in means) gave
-**p ≈ 0.065**. At α = 0.05, we fail to reject the null — the density
+**p ≈ 0.065**. At α = 0.05, we fail to reject the null. The density
 difference in the raw data doesn't clear the bar for statistical
 significance, even though it looked suggestive in the EDA above.
 
@@ -76,8 +75,8 @@ significance, even though it looked suggestive in the EDA above.
 ## Predicting outage duration
 
 **Problem:** predict `OUTAGE.DURATION` (regression) using only information
-available at the moment an outage starts — location, cause category, time of
-year — not post-outage fields like `CUSTOMERS.AFFECTED`.
+available at the moment an outage starts, using location, cause category, and time of
+year. Post-outage fields like `CUSTOMERS.AFFECTED` were not included.
 
 **Baseline model:** Decision Tree Regressor on two features
 (`POPDEN_URBAN`, one-hot `CAUSE.CATEGORY`) — test RMSE **7,418.97 min**,
@@ -102,5 +101,5 @@ accurate predictions most.
 
 ## Full analysis
 
-The complete notebook, cleaning steps, and modeling code are on GitHub:
+The complete notebook, cleaning steps, and modeling code can be found on GitHub:
 [power-outages-population-density](https://github.com/dayconnor/power-outages-population-density).
