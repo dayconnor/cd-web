@@ -1,0 +1,123 @@
+export const metadata = {
+  title: "Power Outages and Population Density in the United States",
+  date: "2026-06-05",
+  summary:
+    "Do higher-density states recover from power outages faster? A permutation-tested EDA and a Random Forest outage-duration model on 16 years of U.S. outage data say: not significantly.",
+  draft: true,
+};
+
+{/* TODO: Replace this opening with your own — why this dataset, what made
+    the question interesting to you, anything from the DSC80 course context
+    worth mentioning. */}
+
+Using 1,534 major U.S. power outage events from 2000–2016, I looked at
+whether population density predicts how long an outage lasts — do
+high-density states recover faster because they have more infrastructure and
+resources nearby, or does the sheer number of people and equipment involved
+work against them?
+
+## The question
+
+**Central question:** Are states with higher population density more
+vulnerable to prolonged power outages, or do they recover faster?
+
+This matters for resource allocation during emergencies — if low-density
+states systematically take longer to recover, utility companies and
+emergency planners have a concrete reason to weight support toward them
+rather than assuming a one-size-fits-all response time.
+
+States were split into "High Density" / "Low Density" groups using the
+median urban population density (2,380 persons per square mile) as the cutoff.
+
+## Exploratory analysis
+
+Outage duration is heavily right-skewed — most outages resolve in under
+5,000 minutes, but some extreme cases run past 100,000 minutes.
+
+<iframe src="/projects/power-outages/plot1.html" height="450"></iframe>
+
+Comparing the two density groups directly, high-density states show
+slightly shorter outage durations on average, but both groups have wide
+spread:
+
+<iframe src="/projects/power-outages/plot3_zoom.html" height="450"></iframe>
+
+One aggregate result stood out: outages caused by **equipment failure** last
+roughly 10x longer in low-density states (4,672.6 min) than high-density
+states (427.7 min) — suggesting rural areas may lack the repair resources
+that dense areas have on hand. Fuel-supply-emergency outages were the
+longest category for both groups.
+
+## Is the missing data a problem?
+
+`CUSTOMERS.AFFECTED` has missing values, and whether that's a data quality
+issue worth worrying about depends on *why* it's missing. Two permutation
+tests:
+
+- Missingness **does** depend on `CAUSE.CATEGORY` (p \< 0.001) — outages
+  from causes like intentional attacks are less likely to have a reported
+  customer count.
+- Missingness does **not** depend on a state's year-over-year GDP change
+  (p ≈ 0.600) — no logical link, and the test found none.
+
+<iframe src="/projects/power-outages/fig_miss1.html" height="450"></iframe>
+
+<iframe src="/projects/power-outages/fig_miss2.html" height="450"></iframe>
+
+{/* TODO: this is a good spot for your own commentary on why the missingness
+    check matters here — e.g. what would've gone wrong if CUSTOMERS.AFFECTED
+    were dropped/imputed naively without checking this first. */}
+
+## Hypothesis test: does density actually predict duration?
+
+**H0:** Outage duration is the same for high- and low-density states — any
+difference is random.
+**H1:** High-density states have shorter outage durations.
+
+A permutation test (10,000 permutations, difference in means) gave
+**p ≈ 0.065**. At α = 0.05, we fail to reject the null — the density
+difference in the raw data doesn't clear the bar for statistical
+significance, even though it looked suggestive in the EDA above.
+
+<iframe src="/projects/power-outages/fig_hyp.html" height="450"></iframe>
+
+## Predicting outage duration
+
+**Problem:** predict `OUTAGE.DURATION` (regression) using only information
+available at the moment an outage starts — location, cause category, time of
+year — not post-outage fields like `CUSTOMERS.AFFECTED`.
+
+**Baseline model:** Decision Tree Regressor on two features
+(`POPDEN_URBAN`, one-hot `CAUSE.CATEGORY`) — test RMSE **7,418.97 min**,
+versus a mean-only baseline of 7,838.99 min.
+
+**Final model:** Random Forest Regressor, tuned via 5-fold
+`GridSearchCV`, adding five features (`CLIMATE.REGION`, `POPPCT_URBAN`,
+`MONTH`, `ANOMALY.LEVEL`, `NERC.REGION`) — test RMSE **6,888.27 min**, a
+further ~530-minute improvement over the baseline.
+
+{/* TODO: your take on the model results — is this error margin good enough
+    to be useful in practice? What would you add with more time/data? */}
+
+## Is the model fair across density groups?
+
+**H0:** the model's RMSE is the same for high- and low-density states.
+**H1:** RMSE is higher for low-density states (the model is less accurate
+where it matters more).
+
+Result: **p = 0.35** — fail to reject. The model performs comparably across
+both groups; it isn't systematically worse for the states that might need
+accurate predictions most.
+
+<iframe src="/projects/power-outages/fig_fair.html" height="450"></iframe>
+
+## My take
+
+{/* TODO: write this section yourself — what surprised you, what you'd
+    change about the analysis, and what the practical takeaway is for
+    someone who actually plans emergency response. */}
+
+## Full analysis
+
+The complete notebook, cleaning steps, and modeling code are on GitHub:
+[power-outages-population-density](https://github.com/dayconnor/power-outages-population-density).

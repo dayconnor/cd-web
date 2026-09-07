@@ -27,7 +27,8 @@ export default async function Home() {
                 >
                   {project.title}
                 </Link>
-                <p className="text-sm text-neutral-600">{project.summary}</p>
+                <p className="text-sm text-neutral-500">{project.date}</p>
+                <p className="mt-1 text-sm text-neutral-600">{project.summary}</p>
               </li>
             ))}
           </ul>

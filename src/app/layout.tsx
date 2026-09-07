@@ -24,12 +24,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               {siteConfig.name}
             </Link>
             <nav className="flex gap-5 text-sm">
-              <Link href="/projects" className="underline decoration-1 underline-offset-2">
-                Projects
-              </Link>
-              <Link href="/gallery" className="underline decoration-1 underline-offset-2">
-                Gallery
-              </Link>
               <Link href="/contact" className="underline decoration-1 underline-offset-2">
                 Contact
               </Link>

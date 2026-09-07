@@ -2,4 +2,4 @@
 
 Personal site and project write-ups.
 
-Live @ https://cd-web-blond.vercel.app/
+Live @ https://connorday.vercel.app/
