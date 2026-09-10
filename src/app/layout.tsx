@@ -37,10 +37,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 
         <footer className="border-t border-neutral-200">
           <div className="mx-auto flex max-w-2xl gap-5 px-6 py-6 text-sm text-neutral-600">
-            <a href={siteConfig.github} className="underline decoration-1 underline-offset-2">
+            <a
+              href={siteConfig.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-1 underline-offset-2"
+            >
               GitHub
             </a>
-            <a href={siteConfig.linkedin} className="underline decoration-1 underline-offset-2">
+            <a
+              href={siteConfig.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-1 underline-offset-2"
+            >
               LinkedIn
             </a>
           </div>
