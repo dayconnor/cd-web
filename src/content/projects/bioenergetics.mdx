@@ -14,14 +14,13 @@ In the past few years, Ray Peat's ideologies have been pushed prominently on soc
 becoming the topic of many widespread conversations from health and gym-bros alike. His takes
 on dieting have become widespread and the center of many debates.
 
-Using NHANES data, I decided to take a look and see if some of the claims made online and by Peat
-himself live up their glory or fall short. It is important to note that the NHANES data does have 
-a self-reporting bias, meaning that, things like dietary logs and lifestyle questions rely purely on
-memory and honesty. Which, as we know, most people are willing to fabricate these questions to make
-themselves appear more healthy than what they actually are. Further, dietary logs do not contain 
-ingredients listed in all the foods people consume. One of Peat's central claims is that PUFA (Polyunsaturated fatty acids)
-is the one of the main causes of inflammation and suppresses thyroid functionality. Many common foods have high PUFA 
-content and could be one the main causes for restraint in the NHANES data.
+Using NHANES data, I decided to take a look and see if some of the claims made online and by Peat himself hold up or fall short. 
+One of Peat's central claims is that PUFA (polyunsaturated fatty acids), now common in the modern food supply through seed oils, 
+suppresses thyroid conversion and drives inflammation. If most people's diets do skew toward high PUFA intake the way Peat's framework assumes, 
+that raises a grand question. Either the thyroid axis behaves the way the framework predicts and the diet claim matters, or it doesn't and the diet claim is irrelevant, 
+regardless of how common seed oils are. It is important to note that this analysis does not measure anyone's diet directly. 
+NHANES has dietary recall data, but that's not what is being used here. Instead, I'm testing the claims at the level Peat's framework actually depends on. 
+That means looking at circulating hormone levels and the metabolic markers they're supposed to predict.
 
 **The short version is that the hypotheses tested, mostly, didn't hold up.** Three of four pre-registered
 hypotheses were not supported, and the one statistically significant result
@@ -85,13 +84,15 @@ The result that survived the multiple-comparison correction, which reversed from
 a higher free-T3/free-T4 ratio is associated with higher triglycerides, not lower. After adjusting the original sample for BMI, the results 
 did not have a significant change. 
 
-In other hypotheses, free T3 did not predict lower total cholesterol, and free T3 versus TSH as a predictor of metabolic syndrome saw no
-significance in either direction. 
+In other hypotheses, free T3 did not predict lower total cholesterol. As for free T3 versus TSH as a predictor of metabolic syndrome, 
+this one came out mixed rather than a clean win either way. Free T3 had a slight edge in overall predictive power on AUC and AIC. 
+TSH was the one whose individual coefficient actually reached significance though. So neither marker clearly beat the other. 
+It really just depends on which angle you're looking at it from.
 
 However, as noted at the beginning of this piece, the suggesting framework to take away from this is that
 circulating free T3 and the FT3/FT4 ratio are bad indicators for the Peat framework described as "pro-metabolic."
 
-According to the Peat community on forums and social media like X, many advocates would point towards the fact that labs are targetting incorrectly.
+According to the Peat community on forums and social media like X, many advocates would point towards the fact that labs are targetting the wrong things.
 They would say that free T3, free T4, and TSH are weak tests for the pro-metabolic framework, arguing that factors like temperature, pulse, cholesterol,
 and prolactin are better markers. However, it is important to note that this is a potential issue with the markers, not the actual regressions. The NHANES data does 
 not contain things like temperature and prolactin, but pulse and cholesterol are used, which is why I used them in the additional hypothesis.
