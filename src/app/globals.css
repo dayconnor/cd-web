@@ -1,11 +1,21 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-serif: var(--font-lora);
+  --font-serif: "Times New Roman", Times, serif;
 }
 
 body {
-  background: #fdfcf8;
+  background: #ffffff;
   color: #1a1a1a;
-  font-family: var(--font-lora), Georgia, "Times New Roman", serif;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 18px;
+}
+
+a.link {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+a.link:hover {
+  text-decoration-style: solid;
 }

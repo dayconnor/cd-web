@@ -7,8 +7,10 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <div>
-      <h1 className="mb-4 text-2xl font-bold">{siteConfig.name}</h1>
-      <p className="text-neutral-700">{siteConfig.email}</p>
+      <h2 className="mb-3 text-sm uppercase tracking-wide text-neutral-500">
+        Email
+      </h2>
+      <p className="text-lg">{siteConfig.email}</p>
     </div>
   );
 }

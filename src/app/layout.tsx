@@ -1,47 +1,40 @@
 import type { Metadata } from "next";
-import { Lora } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { siteConfig } from "@/lib/site-config";
-
-const lora = Lora({
-  variable: "--font-lora",
-  subsets: ["latin"],
-});
+import { Nav } from "@/components/nav";
 
 export const metadata: Metadata = {
   title: siteConfig.name,
-  description: `${siteConfig.name} — ${siteConfig.role}`,
+  description: `${siteConfig.name}, ${siteConfig.role}`,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={lora.variable}>
+    <html lang="en">
       <body className="flex min-h-screen flex-col">
-        <header className="border-b border-neutral-200">
-          <div className="mx-auto flex max-w-2xl items-baseline justify-between px-6 py-6">
-            <Link href="/" className="text-lg font-bold">
+        <header className="mx-auto w-full max-w-3xl px-6 pt-10">
+          <div className="flex items-center justify-between pb-6">
+            <Link href="/" className="text-2xl">
               {siteConfig.name}
             </Link>
-            <nav className="flex gap-5 text-sm">
-              <Link href="/contact" className="underline decoration-1 underline-offset-2">
-                Contact
-              </Link>
-            </nav>
+            <Nav />
           </div>
+          <hr className="border-t border-dashed border-neutral-400" />
         </header>
 
-        <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-12">
+        <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-10">
           {children}
         </main>
 
-        <footer className="border-t border-neutral-200">
-          <div className="mx-auto flex max-w-2xl gap-5 px-6 py-6 text-sm text-neutral-600">
+        <footer className="mx-auto w-full max-w-3xl px-6 pb-10">
+          <hr className="mb-6 border-t border-dashed border-neutral-400" />
+          <div className="flex gap-5 text-base text-neutral-600">
             <a
               href={siteConfig.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline decoration-1 underline-offset-2"
+              className="link"
             >
               GitHub
             </a>
@@ -49,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               href={siteConfig.linkedin}
               target="_blank"
               rel="noopener noreferrer"
-              className="underline decoration-1 underline-offset-2"
+              className="link"
             >
               LinkedIn
             </a>

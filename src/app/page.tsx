@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { siteConfig } from "@/lib/site-config";
 import { getAllProjects } from "@/lib/projects";
 
 export default async function Home() {
@@ -7,28 +6,28 @@ export default async function Home() {
 
   return (
     <div>
-      <h1 className="mb-1 text-2xl font-bold">{siteConfig.name}</h1>
-      <p className="mb-8 text-neutral-600">{siteConfig.role}</p>
-
-      <p className="mb-5 leading-7">
+      <p className="mb-5 leading-8">
         I&apos;m a fourth-year Data Science student studying at the University
         of California, San Diego.
       </p>
 
       {projects.length > 0 && (
         <>
-          <h2 className="mt-10 mb-4 text-lg font-bold">Projects</h2>
-          <ul className="space-y-4">
+          <h2 className="mt-12 mb-5 text-sm uppercase tracking-wide text-neutral-500">
+            Projects
+          </h2>
+          <ul className="space-y-6">
             {projects.map((project) => (
               <li key={project.slug}>
-                <Link
-                  href={`/projects/${project.slug}`}
-                  className="font-semibold underline decoration-1 underline-offset-2"
-                >
-                  {project.title}
-                </Link>
-                <p className="text-sm text-neutral-500">{project.date}</p>
-                <p className="mt-1 text-sm text-neutral-600">{project.summary}</p>
+                <div className="flex items-baseline justify-between gap-4">
+                  <Link href={`/projects/${project.slug}`} className="link text-lg">
+                    {project.title}
+                  </Link>
+                  <span className="shrink-0 text-sm text-neutral-500">
+                    {project.date.slice(0, 7)}
+                  </span>
+                </div>
+                <p className="mt-1 leading-7 text-neutral-700">{project.summary}</p>
               </li>
             ))}
           </ul>
