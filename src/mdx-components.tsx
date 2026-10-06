@@ -14,11 +14,18 @@ const components: MDXComponents = {
   p: ({ children }) => (
     <p className="mb-5 leading-7">{children}</p>
   ),
-  a: ({ href = "", children }) => (
-    <Link href={href} className="link">
-      {children}
-    </Link>
-  ),
+  // Links to other sites open in a new tab; links between pages on this site
+  // stay in the same tab.
+  a: ({ href = "", children }) =>
+    href.startsWith("http") ? (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="link">
+        {children}
+      </a>
+    ) : (
+      <Link href={href} className="link">
+        {children}
+      </Link>
+    ),
   ul: ({ children }) => (
     <ul className="mb-5 ml-6 list-disc space-y-1">{children}</ul>
   ),

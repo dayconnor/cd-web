@@ -4,6 +4,10 @@ Personal site and project write-ups: [connor.day](https://connor.day)
 
 ## Projects
 
+- **Text-to-Image Search for Clothing with FashionCLIP and CLIP.** Comparing
+  two models on 45,622 Fashionpedia images with a pre-registered evaluation.
+  [Write-up](https://connor.day/projects/garment-search) ·
+  [Source](https://github.com/dayconnor/garment-search)
 - **Does thyroid function predict metabolic health?** Testing popular
   bioenergetic claims against NHANES data.
   [Write-up](https://connor.day/projects/bioenergetics) ·
