@@ -26,10 +26,14 @@ async function loadEntry(slug: string): Promise<ProjectEntry> {
   return { ...metadata, slug };
 }
 
-// Only published (non-draft) slugs — safe to link to and generate pages for.
+// Published slugs only in production. In dev, drafts get a page too so they
+// can be previewed by URL (they still stay off the homepage list).
 export async function getProjectSlugs(): Promise<string[]> {
   const entries = await Promise.all(allSlugs().map(loadEntry));
-  return entries.filter((entry) => !entry.draft).map((entry) => entry.slug);
+  const showDrafts = process.env.NODE_ENV === "development";
+  return entries
+    .filter((entry) => showDrafts || !entry.draft)
+    .map((entry) => entry.slug);
 }
 
 export async function getAllProjects(): Promise<ProjectEntry[]> {
