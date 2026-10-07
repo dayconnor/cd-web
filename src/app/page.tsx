@@ -7,7 +7,7 @@ export default async function Home() {
   return (
     <div>
       <p className="mb-5 leading-8">
-        I&apos;m a fourth-year Data Science student studying at the University
+        I&apos;m a third-year Data Science student studying at the University
         of California, San Diego.
       </p>
       <p className="mb-5 leading-8">
