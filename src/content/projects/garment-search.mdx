@@ -7,68 +7,68 @@ export const metadata = {
 
 ## What I did
 
-I built a search engine for clothing photos. You type a description, like
-`striped shirt` or `oversized blazer`, and it returns the closest matching
-images out of 45,622 clothing images from
-[Fashionpedia](https://fashionpedia.github.io/home/), a research dataset where
-every garment is labeled with its category and a set of fine-grained
-attributes. The text and the images are both turned into vectors in the same
-space, and the images closest to the query come back as results.
+I built a search engine for clothing photos. You type something like
+`striped shirt` or `oversized blazer` and it pulls the closest matches from
+45,622 images in [Fashionpedia](https://fashionpedia.github.io/home/), a
+research dataset where every garment is labeled with its category and a set of
+fine-grained attributes. The query text and the images get turned into vectors
+in the same space, and whichever images sit closest to the query come back.
 
-I ran the same search with two models, FashionCLIP, which was trained on
-fashion products, and OpenAI's general-purpose CLIP, and measured how often
-each one returned the right clothes. I also tested how each one held up once a
-search went past a single garment, into attributes like "striped" or "baggy,"
-combinations of garments, and style.
+I ran every search through two models: FashionCLIP, which was trained on
+fashion products, and OpenAI's general-purpose CLIP. Then I measured how often
+each one returned the right clothes. Single garments are the easy case, so I
+also wanted to see what happened with attributes like "striped" or "baggy,"
+with outfits made of more than one piece, and with style.
 
-Before the first image was embedded, I wrote down 20 test queries, what would
-count as a relevant result for each one, the metrics, the pass thresholds, and
-six ways I expected the models to fail. Writing all of that down first meant I
-couldn't adjust the test after seeing which model was ahead.
+Before I embedded a single image, I wrote down 20 test queries, what would
+count as a relevant result for each, the metrics, the pass thresholds, and six
+ways I expected the models to fail. That way I couldn't quietly adjust the
+test once I saw which model was ahead.
 
-The queries were split into four tiers:
+The queries fall into four tiers:
 
-- **Tier A (5 queries):** a single garment, like `cardigan` or `shorts`.
-- **Tier B (7 queries):** a garment plus one attribute, like `striped shirt`
-  or `baggy jeans`.
-- **Tier C (4 queries):** combinations, like `blazer over a white t-shirt` or
+- Tier A, 5 queries: a single garment, like `cardigan` or `shorts`.
+- Tier B, 7 queries: a garment plus one attribute, like `striped shirt` or
+  `baggy jeans`.
+- Tier C, 4 queries: combinations, like `blazer over a white t-shirt` or
   `long coat with a scarf`.
-- **Tier D (4 queries):** color, occasion, and style, like
-  `monochrome black outfit` and `goth outfit`. Fashionpedia doesn't label any
-  of these, so I predicted this tier would fail.
+- Tier D, 4 queries: color, occasion, and style, like
+  `monochrome black outfit` and `goth outfit`. Fashionpedia has no labels for
+  any of these, so I predicted this tier would fail.
 
 ## The methodology
 
-Some choices in the analysis that I made:
+Both models went through the same pipeline. FashionCLIP and OpenAI's CLIP
+ViT-B/32 were used zero-shot with identical preprocessing and embedding code,
+so the weights are the only difference between them. Queries were embedded as
+plain text with no "a photo of..." template. I decided that up front so I
+couldn't tune a template against the test set.
 
-- **The same pipeline for both models.** FashionCLIP and OpenAI's CLIP
-  ViT-B/32 were both used zero-shot, with the same preprocessing and embedding
-  code, so the only thing that differs between them is the weights. Queries
-  were embedded as plain text with no "a photo of..." template, which I
-  decided in advance so the template couldn't be tuned against the test set.
-- **Exact search.** Every image is stored as a 512-dimensional vector in a
-  FAISS index that computes exact cosine similarity. At around 45,000 images,
-  an approximate index would only add error that gets mixed in with model
-  quality.
-- **Relevance from the dataset's labels.** Each Tier A to C query has a rule
-  written over Fashionpedia's labels. For `striped shirt`, a result counts if
-  the image contains a shirt carrying the stripe attribute. The headline
-  metric is capped recall@10: the number of relevant images in the top 10,
-  divided by 10, or by the total number of relevant images if the dataset has
-  fewer than 10. I also report mean reciprocal rank (MRR), which measures how
-  high the first relevant result shows up.
-- **Relevance from my own judging, done blind.** Labels miss things, so I
-  judged the top 10 for every query and model by hand, 391 image and query
-  pairs in total, scored 2 (clearly relevant), 1 (arguably relevant), or 0
-  (not relevant). The pairs were pooled across both models and shuffled, so I
-  never knew which model returned an image or at what rank. Strict
-  precision@10 counts only the 2s.
-- **Pass thresholds set in advance** on capped recall@10: at least 0.80 for
-  Tier A, 0.50 for Tier B, and 0.30 for Tier C.
+Search is exact. Each image is a 512-dimensional vector in a FAISS index that
+computes exact cosine similarity. At about 45,000 images there's no reason to
+use an approximate index, and doing so would mix its error in with the model
+quality I was trying to measure.
+
+For Tiers A to C, relevance comes from the dataset's labels. Each query has a
+rule written over Fashionpedia's annotations. For `striped shirt`, a result
+counts if the image has a shirt with the stripe attribute. The main metric is
+capped recall@10: relevant images in the top 10, divided by 10, or by the total
+number of relevant images if the dataset has fewer than 10. I also report mean
+reciprocal rank (MRR), which tracks how high the first relevant result shows
+up.
+
+Labels miss things, so I also judged the top 10 for every query and model by
+hand. That came to 391 image and query pairs, each scored 2 (clearly
+relevant), 1 (arguably relevant), or 0 (not relevant). I pooled the pairs
+across both models and shuffled them, so I never knew which model returned an
+image or at what rank. Strict precision@10 only counts the 2s.
+
+The pass thresholds were set in advance on capped recall@10: 0.80 for Tier A,
+0.50 for Tier B, and 0.30 for Tier C.
 
 ## What I found
 
-| | FashionCLIP | CLIP |
+| Metric | FashionCLIP | CLIP |
 |---|---|---|
 | Capped recall@10, Tiers A to C | **0.612** | 0.488 |
 | MRR, Tiers A to C | **0.774** | 0.641 |
@@ -83,61 +83,64 @@ Some choices in the analysis that I made:
 <img
   src="/projects/garment-search/tier_recall.png"
   alt="Capped recall@10 by tier for FashionCLIP and CLIP against the pre-registered thresholds"
+  style={{ maxHeight: "400px", width: "auto", margin: "0 auto 1.25rem" }}
 />
 
-FashionCLIP scored higher on 8 of the 16 graded queries, lower on 3, and tied
-on 5. With only 16 queries I didn't run a significance test, so the comparison
-is descriptive only.
+FashionCLIP beat CLIP on 8 of the 16 graded queries, lost on 3, and tied on 5.
+Sixteen queries is too few for a significance test, so I'm treating this as a
+description and not a statistical claim.
 
-My hand judging gave the same ordering on every tier. Strict precision@10 for
-FashionCLIP and CLIP was 0.92 and 0.76 on Tier A, 0.83 and 0.51 on Tier B,
-0.33 and 0.28 on Tier C, and 0.85 and 0.57 on Tier D.
+My hand judging put the models in the same order on every tier. Strict
+precision@10 for FashionCLIP and CLIP was 0.92 and 0.76 on Tier A, 0.83 and
+0.51 on Tier B, 0.33 and 0.28 on Tier C, and 0.85 and 0.57 on Tier D.
 
 <img
   src="/projects/garment-search/manual_precision.png"
   alt="Strict and lenient manual precision@10 by tier for FashionCLIP and CLIP"
+  style={{ maxHeight: "400px", width: "auto", margin: "0 auto 1.25rem" }}
 />
 
 The queries with the most misses:
 
-- **`striped shirt`:** seven of CLIP's top 10 were striped t-shirts, which
-  left it at 0.1 strict precision against FashionCLIP's 0.9.
-- **`baggy jeans`:** CLIP mostly returned straight-leg and slim jeans (0.1).
-  FashionCLIP handled "baggy" better at 0.7.
-- **`oversized blazer`:** 0.0 for both models. The results were fitted
-  blazers, long coats, and cardigans, with not one clearly oversized blazer.
-- **`long coat with a scarf`:** both models found the scarves, but the coats
-  were too short. Only 16 images in the whole dataset match this query.
+- `striped shirt`: seven of CLIP's top 10 were striped t-shirts, which left it
+  at 0.1 strict precision. FashionCLIP got 0.9.
+- `baggy jeans`: CLIP mostly returned straight-leg and slim jeans (0.1).
+  FashionCLIP did better with "baggy" at 0.7.
+- `oversized blazer`: 0.0 for both. I got fitted blazers, long coats, and
+  cardigans, and not one clearly oversized blazer.
+- `long coat with a scarf`: both models found the scarves, but the coats were
+  too short. Only 16 images in the whole dataset match this query.
 
-Hand judging also showed that Fashionpedia's labels miss a lot of correct
-results. Of the judged images the labels counted as irrelevant, 28% (40 of
-144) were clearly relevant. The biggest case was `sleeveless dress`, where
-capped recall was 0.0 for both models while strict precision was 1.0 and 0.9.
-Fashionpedia attaches the "sleeveless" attribute to sleeves, and a sleeveless
-dress has no sleeve to carry it. Of the 19 judged images the labels missed, 18
-were clearly sleeveless dresses.
+The hand judging also showed how much Fashionpedia's labels miss. Of the judged
+images the labels called irrelevant, 28% (40 of 144) were clearly relevant.
+The worst case was `sleeveless dress`. Capped recall was 0.0 for both models,
+while strict precision was 1.0 and 0.9. The reason is that Fashionpedia
+attaches the "sleeveless" attribute to sleeves, and a sleeveless dress doesn't
+have one to attach it to. Of the 19 judged images the labels missed for this
+query, 18 were clearly sleeveless dresses.
 
 <img
   src="/projects/garment-search/sparsity_gap.png"
   alt="Strict manual precision@10 minus capped recall@10 for each query"
+  style={{ maxHeight: "400px", width: "auto", margin: "0 auto 1.25rem" }}
 />
 
-Tier D was predicted to fail, and as a tier it didn't. FashionCLIP scored 1.0
-on `monochrome black outfit`, 1.0 on `business casual office outfit`, and 0.9
-on the beach query. CLIP was lower on all three, at 0.8, 0.7, and 0.3. The one
-real style query, `goth outfit`, landed at 0.5 for both models.
+I predicted Tier D would fail, and it mostly didn't. FashionCLIP scored 1.0 on
+`monochrome black outfit`, 1.0 on `business casual office outfit`, and 0.9 on
+the beach query. CLIP came in lower on all three at 0.8, 0.7, and 0.3. The one
+pure style query, `goth outfit`, landed at 0.5 for both.
 
 <img
   src="/projects/garment-search/tier_d.png"
   alt="Strict manual precision@10 for the four color, occasion, and style queries"
+  style={{ maxHeight: "400px", width: "auto", margin: "0 auto 1.25rem" }}
 />
 
-These results come with limits. I was the only judge, there are 20 queries,
-and each one is graded on 10 images, so a difference of 0.1 on a single query
-is one image.
+A few caveats. I was the only judge, there are only 20 queries, and each one is
+graded on 10 images, so a 0.1 difference on a single query means one image.
 
 ## Full analysis
 
-The complete pipeline, the pre-registered protocol, all 391 hand judgments
-with their reasons, and the full error analysis are on GitHub:
+The full pipeline, the pre-registered protocol, all 391 hand judgments with my
+reasoning, and the complete error analysis are on GitHub:
 [Garment Search](https://github.com/dayconnor/garment-search).
