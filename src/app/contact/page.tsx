@@ -1,3 +1,4 @@
+import { CopyEmail } from "@/components/copy-email";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata = {
@@ -13,7 +14,9 @@ export default function ContactPage() {
         <h2 className="mb-2 text-sm uppercase tracking-wide text-neutral-500">
           Email
         </h2>
-        <p className="text-lg">{siteConfig.email}</p>
+        <p className="text-lg">
+          <CopyEmail email={siteConfig.email} />
+        </p>
       </section>
 
       <section>

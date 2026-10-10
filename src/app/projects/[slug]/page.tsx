@@ -63,7 +63,19 @@ export default async function ProjectPost({
         dangerouslySetInnerHTML={{ __html: jsonLdString(articleJsonLd) }}
       />
       <h1 className="mb-1 text-2xl font-bold">{metadata.title}</h1>
-      <p className="mb-8 text-sm text-neutral-500">{metadata.date}</p>
+      <p className="mb-6 text-sm text-neutral-500">{metadata.date}</p>
+      <p className="mb-3 text-sm text-neutral-600">
+        {metadata.tools.join(" · ")}
+      </p>
+      <a
+        href={metadata.repo}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="link text-sm"
+      >
+        GitHub
+      </a>
+      <hr className="mt-6 mb-8 border-t border-dashed border-neutral-400" />
       <Post />
     </article>
   );

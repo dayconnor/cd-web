@@ -7,6 +7,8 @@ export type ProjectMeta = {
   title: string;
   date: string;
   summary: string;
+  tools: string[];
+  repo: string;
   draft?: boolean;
 };
 
