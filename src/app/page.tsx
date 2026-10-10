@@ -1,11 +1,23 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllProjects } from "@/lib/projects";
+import { jsonLdString, personJsonLd } from "@/lib/seo";
+import { siteConfig } from "@/lib/site-config";
+
+export const metadata: Metadata = {
+  title: { absolute: `${siteConfig.name} | Data Science Student at UC San Diego` },
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
   const projects = await getAllProjects();
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(personJsonLd) }}
+      />
       <p className="mb-5 leading-8">
         I&apos;m a third-year Data Science student studying at the University
         of California, San Diego.

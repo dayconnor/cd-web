@@ -3,10 +3,20 @@ import Link from "next/link";
 import "./globals.css";
 import { siteConfig } from "@/lib/site-config";
 import { Nav } from "@/components/nav";
+import { sharedOpenGraph } from "@/lib/seo";
 
+// Child pages set their own title, canonical URL, and openGraph. openGraph is
+// replaced (not merged) by any page that sets it, so pages spread
+// sharedOpenGraph from lib/seo to keep the site name and locale.
 export const metadata: Metadata = {
-  title: siteConfig.name,
-  description: `${siteConfig.name}, ${siteConfig.role}`,
+  metadataBase: new URL(siteConfig.url),
+  title: {
+    default: siteConfig.name,
+    template: `%s | ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  openGraph: { ...sharedOpenGraph, type: "website" },
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

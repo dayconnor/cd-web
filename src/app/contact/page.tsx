@@ -2,6 +2,8 @@ import { siteConfig } from "@/lib/site-config";
 
 export const metadata = {
   title: "Contact",
+  description: `Email and location for ${siteConfig.name}.`,
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
