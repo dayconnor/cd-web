@@ -1,6 +1,6 @@
 # Connor Day
 
-Personal site and project write-ups: [connor.day](https://connor.day)
+Personal site and project write-ups: [connor.day](https://www.connor.day/)
 
 ## Projects
 
