@@ -23,8 +23,7 @@ export default async function Home() {
         of California, San Diego.
       </p>
       <p className="mb-5 leading-8">
-        My projects come from a curiosity about how humans operate, internally and externally, 
-        from diet to the clothes we wear.
+        Projects are inspired by personal interests and concepts I've learned.
       </p>
 
       {projects.length > 0 && (
