@@ -1,0 +1,21 @@
+export const metadata = {
+  title: "Are Polymarket prices calibrated? Testing against 1.27 billion on-chain trades",
+  date: "2026-10-19",
+  summary:
+    "In progress. Testing whether Polymarket prices match how often events actually happen, and whether that differs between crypto, politics, sports and other markets, using 1.27 billion on-chain trades.",
+  tools: ["Python", "DuckDB", "SQL", "Pandas", "NumPy"],
+  repo: "https://github.com/dayconnor/polymarket-analysis",
+};
+
+## What I'm doing
+
+If a Polymarket contract trades at 70 cents, the market is saying the event
+has roughly a 70% chance of happening. I want to know if that's true in
+practice. Across every resolved yes/no market, do the 70-cent outcomes
+actually happen about 70% of the time? I'm also curious whether crypto
+markets are priced any better or worse than politics, sports and the rest.
+
+For each resolved market I take the last trade price a week, a day and an
+hour before it closes. The data is a public dump of 1,266,885,846 on-chain
+trades across about 4 million markets. That's around 46 GB, so instead of
+downloading it I have DuckDB query it in place.
