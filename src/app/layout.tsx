@@ -3,6 +3,7 @@ import Link from "next/link";
 import "./globals.css";
 import { siteConfig } from "@/lib/site-config";
 import { Nav } from "@/components/nav";
+import { AsciiCat } from "@/components/ascii-cat";
 import { sharedOpenGraph } from "@/lib/seo";
 
 // Child pages set their own title, canonical URL, and openGraph. openGraph is
@@ -58,6 +59,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </a>
           </div>
         </footer>
+
+        <AsciiCat />
       </body>
     </html>
   );
