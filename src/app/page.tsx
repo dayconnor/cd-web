@@ -1,12 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllProjects } from "@/lib/projects";
-import { jsonLdString, personJsonLd } from "@/lib/seo";
+import { jsonLdString, personJsonLd, sharedOpenGraph } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
 
+const previewTitle = `${siteConfig.name} | Data Science Student at UC San Diego`;
+
+// The layout's title template only applies to child routes, so the home page
+// spells out the full tab title. Link previews keep the longer title.
 export const metadata: Metadata = {
-  title: { absolute: `${siteConfig.name} | Data Science Student at UC San Diego` },
+  title: { absolute: `${siteConfig.name} | Home` },
   alternates: { canonical: "/" },
+  openGraph: { ...sharedOpenGraph, type: "website", title: previewTitle },
+  twitter: { card: "summary_large_image", title: previewTitle },
 };
 
 export default async function Home() {
@@ -23,7 +29,7 @@ export default async function Home() {
         of California, San Diego.
       </p>
       <p className="mb-5 leading-8">
-        Projects are inspired by personal interests and concepts I've learned.
+        Projects are inspired by personal interests and concepts I&apos;ve learned.
       </p>
 
       {projects.length > 0 && (

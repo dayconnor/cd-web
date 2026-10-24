@@ -1,10 +1,16 @@
 import { CopyEmail } from "@/components/copy-email";
+import { sharedOpenGraph } from "@/lib/seo";
 import { siteConfig } from "@/lib/site-config";
+
+// The tab reads "Connor Day | Contact"; link previews keep the old order.
+const previewTitle = `Contact | ${siteConfig.name}`;
 
 export const metadata = {
   title: "Contact",
   description: `Email and location for ${siteConfig.name}.`,
   alternates: { canonical: "/contact" },
+  openGraph: { ...sharedOpenGraph, type: "website", title: previewTitle },
+  twitter: { card: "summary_large_image", title: previewTitle },
 };
 
 export default function ContactPage() {
