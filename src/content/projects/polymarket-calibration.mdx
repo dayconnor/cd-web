@@ -19,3 +19,110 @@ For each resolved market I take the last trade price a week, a day and an
 hour before it closes. The data is a public dump of 1,266,885,846 on-chain
 trades across about 4 million markets. That's around 46 GB, so instead of
 downloading it I have DuckDB query it in place.
+
+Right now I'm finishing the pipeline and checking that the data can be
+trusted, so no price has been compared with an outcome yet and there are no
+calibration results on this page.
+
+## Writing the plan down first
+
+Before I computed a single snapshot price, I wrote down the questions, the
+tests and the thresholds and committed them to the repo on October 21. Any
+change since then gets logged with a date and a reason before the result it
+affects exists. There are five so far. One discloses a profiling query I
+shouldn't have run, and the rest tighten a definition or add a check.
+
+The three questions:
+
+1. **Crypto vs. everything else (the main one).** If you fit a curve of how
+   often things happened against what the price said, a perfectly calibrated
+   market has a slope of 1. Below 1 means prices are too extreme, and above 1
+   means they're too timid. I test whether crypto markets have a different
+   slope than non-crypto markets at each horizon, separately for
+   auto-generated template markets and one-off event markets. That's six
+   tests, corrected for multiple comparisons.
+2. **Longshots.** Are outcomes priced under 10 cents overpriced, and does that
+   bias shrink in more liquid markets?
+3. **Wallets.** Does net buying by wallets with strong track records predict
+   the outcome beyond what the price already says? A wallet's track record
+   only counts markets that had already resolved at the time of the snapshot,
+   so it can't see the future.
+
+## Cleaning up the markets
+
+To know whether a market resolved, who won, and when it closed, I use
+Polymarket's own API. I asked it about 2,223,448 closed yes/no markets and
+kept 2,205,956. Most of the 17,492 I dropped were voided markets that paid out
+50/50 (12,929), along with 2,758 that were disputed at some point and 1,039
+that never finalized.
+
+On the trade side I ran four checks over all 1.27 billion trades: the price
+is between 0 and 1, every trade has a side, every trade belongs to a known
+market, and no trade appears twice. There were zero failures.
+
+## Taking the snapshots
+
+The kept markets have 1,077,447,561 trades between them, which comes to
+6.8 GB once extracted. From those I built 1,925,812 snapshots, one per market
+and horizon. A snapshot is the last trade of at least $1 before the horizon,
+and it has to be recent: within the hour for the 1-hour snapshot, within the
+day for 1 day, and within the week for 1 week. The main analysis also requires
+at least $1,000 in volume, which leaves 78,156 markets at 1 week, 351,535 at
+1 day and 371,676 at 1 hour. The 1-week count is much smaller because a lot of
+markets, like the hourly crypto up/down ones, don't exist a week before they
+close.
+
+To check the SQL, I recomputed the snapshots for 2,000 random markets a
+different way, and every row matched.
+
+## Sorting markets by subject
+
+Comparing crypto with everything else means every market needs a label. I
+wrote rules over each market's text that assign a subject (crypto, politics,
+sports, weather or other) and a format (template or event), and froze them
+before checking how well they worked. Then I drew 400 markets, 80 from each
+predicted subject, and labeled them by hand.
+
+The labels were drafted by the AI assistant that helped me write the rules,
+and I reviewed them and changed 3. Since the labeler and the rules share the
+same reading of edge cases, the scores are probably a bit optimistic, and I
+logged that before running the evaluation.
+
+| Metric | Result | Needed |
+|---|---|---|
+| Crypto precision | 1.000 (80/80) | 0.95 |
+| Crypto recall | 0.994 | 0.95 |
+| Format accuracy | 0.987 | 0.95 |
+
+All three passed. The recall number is less certain than it looks, since it
+rests on a single crypto market that the rules missed. The weak spot is the
+catch-all "other" subject at 0.825 accuracy, which is where politics and
+sports questions without a matching keyword end up. That doesn't touch the
+crypto vs. non-crypto split the main question depends on.
+
+## Checking the outcomes on-chain
+
+Every Polymarket market settles through a smart contract on the Polygon
+blockchain, so the API's answer about who won can be checked against the chain
+directly. I pulled the final payout and resolution time for 470 markets: 200
+at random, plus 30 from each subject and format combination so that small
+groups like politics didn't get skipped by chance. The rule I set in advance
+was that if fewer than 99% of the random markets agreed, I'd stop and rethink
+the outcome data. All 200 agreed, and none of the 470 disagreed. The check
+also confirmed which token is which in all 470 markets, which matters because
+every snapshot prices the same side.
+
+The API's closing time matched the on-chain resolution time exactly in 97.5%
+of the random markets and was within a minute in 99%. It was never more than
+6 seconds late. That's the part that matters, since a late closing time would
+let the "1 hour before" snapshot include trades made after the answer was
+already known.
+
+## What's next
+
+The last piece of data is in place for the wallet question: every one of the
+1.27 billion trades with both wallets attached, 18.1 GB in all, which passed
+its checks with zero failures. Next I build each wallet's track record from
+the markets that had already resolved at each snapshot, and then the
+notebooks that actually run the tests. I'll post the results here once
+they're run, whichever way they come out.
