@@ -22,10 +22,3 @@ Personal site and project write-ups: [connor.day](https://www.connor.day/)
   [Source](https://github.com/dayconnor/power-outages-population-density)
 
 Built with Astro and plain CSS, deployed on Vercel.
-
-```sh
-npm ci
-npm run dev     # localhost:4321
-npm run build   # static output in dist/
-npm run check   # type and content checks
-```
