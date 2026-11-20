@@ -13,16 +13,14 @@ const year = new Date().getFullYear();
     <span aria-hidden="true">·</span>
     <a href={site.linkedin} target="_blank" rel="noopener">linkedin</a>
     <span aria-hidden="true">·</span>
-    <a href="/contact">email</a>
-    <span aria-hidden="true">·</span>
-    <a href="/rss.xml">rss</a>
+    <a href="/contact">contact</a>
   </nav>
   <span>connor.day · {year}</span>
   {credits.length > 0 && (
     <p class="credit">
       photographs by {credits.map((c, i) => (
         <>{i > 0 && (i === credits.length - 1 ? " and " : ", ")}{c.url ? <a href={c.url} target="_blank" rel="noopener">{c.credit}</a> : c.credit}</>
-      ))}, used with permission. thank you.
+      ))}
     </p>
   )}
 </footer>
