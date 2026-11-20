@@ -1,0 +1,17 @@
+---
+// Vercel Web Analytics. The package's own Astro component counts a pageview
+// as soon as its script runs, and pages prerendered by the speculation rules
+// in Base.astro run their scripts on hover, before anyone opens them. This
+// waits until a prerendered page is actually shown.
+---
+<script>
+  import { inject } from "@vercel/analytics";
+
+  const start = () => inject({ framework: "astro" });
+
+  if ((document as Document & { prerendering?: boolean }).prerendering) {
+    document.addEventListener("prerenderingchange", start, { once: true });
+  } else {
+    start();
+  }
+</script>

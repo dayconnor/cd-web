@@ -10,6 +10,7 @@ import Backdrop from "../components/Backdrop.astro";
 import Topbar from "../components/Topbar.astro";
 import Colophon from "../components/Colophon.astro";
 import Cat from "../components/Cat.astro";
+import Analytics from "../components/Analytics.astro";
 import { site } from "../site";
 
 interface Props {
@@ -131,5 +132,6 @@ const ld = jsonLd
       </>
     )}
     <Cat />
+    <Analytics />
   </body>
 </html>
