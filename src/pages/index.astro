@@ -309,8 +309,11 @@ const person = {
     }
   }
 
+  /* Touch screens can't hover, so the other photographs never show. Skip
+     downloading them and keeping each one as a full-screen layer. */
   @media (hover: none) {
-    .desc {
+    .desc,
+    .nocturne :global(.shot:not(.shot--base)) {
       display: none;
     }
   }

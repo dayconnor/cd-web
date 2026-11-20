@@ -137,8 +137,13 @@ p {
   view-transition-name: backdrop;
 }
 
+/* Sized to the largest viewport, not stretched to the current one. Phones
+   resize fixed elements while the address bar slides away, and re-blurring
+   the photograph on every one of those frames stalls the first scroll. */
 .backdrop--fixed {
   position: fixed;
+  bottom: auto;
+  height: calc(100lvh + 64px);
 }
 
 .backdrop::after {
@@ -547,11 +552,12 @@ main:has(> .sheet) {
 }
 
 /* Prose: text holds a 650px measure; figures, tables and plots step out to
-   820px on the right. */
+   820px on the right. The text column fills first, so on a phone it takes
+   the whole width and the step-out column shrinks to nothing. */
 .prose {
   display: grid;
   grid-template-columns:
-    [content-start wide-start] minmax(0, var(--measure))
+    [content-start wide-start] min(var(--measure), 100%)
     [content-end] minmax(0, calc(var(--wide) - var(--measure))) [wide-end];
   font-size: 1.14rem;
   line-height: 1.72;
