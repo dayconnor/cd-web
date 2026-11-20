@@ -15,6 +15,7 @@ import { site } from "../site";
 
 interface Props {
   title?: string;          // page part of the tab title; omitted on home
+  tabTitle?: string;       // replaces the whole tab title (write-ups use their label)
   description?: string;
   ogImage?: string;        // path under /og/
   type?: "website" | "article";
@@ -30,6 +31,7 @@ interface Props {
 
 const {
   title,
+  tabTitle,
   description = site.description,
   ogImage = "/og/home.png",
   type = "website",
@@ -43,7 +45,7 @@ const {
   noindex = false,
 } = Astro.props;
 
-const fullTitle = title ? `${site.name} | ${title}` : `${site.name} | Home`;
+const fullTitle = tabTitle ?? (title ? `connor day / ${title}` : "connor day");
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", site.url).href;
 const image = new URL(ogImage, site.url).href;
 
@@ -93,7 +95,7 @@ const ld = jsonLd
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:title" content={title ?? `${site.name} | Data Science Student at UC San Diego`} />
+    <meta property="og:title" content={title ?? "connor day"} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={image} />
