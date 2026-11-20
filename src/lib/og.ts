@@ -4,8 +4,12 @@ import sharp from "sharp";
 import { site } from "../site";
 
 // Satori needs TTF/OTF/WOFF, not WOFF2, so the OG fonts live separately.
+// newsreader-text and newsreader-italic are TTF copies of the site's own
+// newsreader-400 files, so the home card matches the landing page.
 const fonts = Promise.all([
   readFile("src/assets/og-fonts/newsreader-display.ttf"),
+  readFile("src/assets/og-fonts/newsreader-text.ttf"),
+  readFile("src/assets/og-fonts/newsreader-italic.ttf"),
   readFile("src/assets/og-fonts/jetbrains-mono.ttf"),
 ]);
 
@@ -27,15 +31,18 @@ const scene = `data:image/svg+xml;utf8,${encodeURIComponent(
 </svg>`,
 )}`;
 
-export async function ogPng(title: string, kicker: string) {
-  const [serif, mono] = await fonts;
-  const big = title.length > 60 ? 54 : 64;
+// The shared card: night scene, top row, main block, and the connor.day footer.
+async function render(top: Node, main: Node) {
+  const [display, text, italic, mono] = await fonts;
 
   const tree = h(
     "div",
     {
       width: "100%",
       height: "100%",
+      // Satori adds padding on top of the size unless told otherwise, which
+      // made the card 776px tall and pushed the footer off the bottom.
+      boxSizing: "border-box",
       position: "relative",
       flexDirection: "column",
       justifyContent: "space-between",
@@ -47,18 +54,8 @@ export async function ogPng(title: string, kicker: string) {
       fontFamily: "Newsreader",
     },
     { type: "img", props: { src: scene, width: 1200, height: 630, style: { position: "absolute", top: 0, left: 0 } } },
-    h(
-      "div",
-      { alignItems: "center", gap: 18, fontSize: 34, letterSpacing: "-0.01em" },
-      h("div", { width: 11, height: 11, borderRadius: 11, backgroundColor: "#efe9d5", boxShadow: "0 0 18px 4px rgba(239,233,213,0.35)" }),
-      site.name,
-    ),
-    h(
-      "div",
-      { flexDirection: "column", gap: 26, maxWidth: 900 },
-      h("div", { fontSize: big, lineHeight: 1.12, letterSpacing: "-0.02em" }, title),
-      h("div", { fontFamily: "JetBrains Mono", fontSize: 24, color: "#768191" }, kicker),
-    ),
+    top,
+    main,
     h(
       "div",
       { fontFamily: "JetBrains Mono", fontSize: 22, color: "#768191", borderTop: "2px solid #1e232d", paddingTop: 24, width: "100%" },
@@ -70,9 +67,40 @@ export async function ogPng(title: string, kicker: string) {
     width: 1200,
     height: 630,
     fonts: [
-      { name: "Newsreader", data: serif, weight: 400, style: "normal" },
+      { name: "Newsreader", data: display, weight: 400, style: "normal" },
+      { name: "Newsreader Text", data: text, weight: 400, style: "normal" },
+      { name: "Newsreader Text", data: italic, weight: 400, style: "italic" },
       { name: "JetBrains Mono", data: mono, weight: 400, style: "normal" },
     ],
   });
   return sharp(Buffer.from(svg)).png({ compressionLevel: 9, palette: true, quality: 90 }).toBuffer();
+}
+
+// Project write-ups: same layout as the home card, with the italic name as a
+// small header over the write-up's title.
+export function ogPng(title: string) {
+  const big = title.length > 60 ? 56 : 64;
+  return render(
+    h("div", { height: 1 }),
+    h(
+      "div",
+      // 880 keeps every title clear of the lamp post at x=1008.
+      { flexDirection: "column", gap: 22, maxWidth: 880 },
+      h("div", { fontFamily: "Newsreader Text", fontSize: 44, fontStyle: "italic", color: "#d2d9e1" }, site.name.toLowerCase()),
+      h("div", { fontSize: big, lineHeight: 1.1, letterSpacing: "-0.02em" }, title),
+    ),
+  );
+}
+
+// Home page: the landing page's header, italic name over a plain line.
+export function ogHomePng(line: string) {
+  return render(
+    h("div", { height: 1 }),
+    h(
+      "div",
+      { flexDirection: "column", gap: 20, fontFamily: "Newsreader Text" },
+      h("div", { fontSize: 104, fontStyle: "italic", lineHeight: 1.05, letterSpacing: "-0.005em" }, site.name.toLowerCase()),
+      h("div", { fontSize: 42, color: "#d2d9e1" }, line),
+    ),
+  );
 }
