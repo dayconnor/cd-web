@@ -21,4 +21,11 @@ Personal site and project write-ups: [connor.day](https://www.connor.day/)
   [Write-up](https://www.connor.day/projects/power-outages) ·
   [Source](https://github.com/dayconnor/power-outages-population-density)
 
-Built with Next.js, TypeScript, and Tailwind CSS, deployed on Vercel.
+Built with Astro and plain CSS, deployed on Vercel.
+
+```sh
+npm ci
+npm run dev     # localhost:4321
+npm run build   # static output in dist/
+npm run check   # type and content checks
+```

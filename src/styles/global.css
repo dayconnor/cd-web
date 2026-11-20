@@ -1,0 +1,1874 @@
+/* ==========================================================================
+   connor.day: "cold winter night, eerie yet comforting"
+   Styles for the first redesign, now only used by /scene. Everything below
+   is plain CSS: no framework, no runtime JS.
+   ========================================================================== */
+
+:root {
+  /* Palette pulled from the reference photographs: blue-slate dusk, snow in
+     shadow, wet asphalt, and one cold-white streetlamp. */
+  --bg: #0c0f14;          /* night road */
+  --bg-deep: #080a0e;
+  --surface: #131820;     /* overcast sky */
+  --surface-2: #182029;
+  --border: #222936;      /* power lines */
+  --border-strong: #2e3746;
+  --text: #dbe2ea;        /* snow */
+  --prose: #c5ced8;
+  --muted: #8a95a5;       /* fog */
+  --dim: #7d8898;         /* small labels; still 4.9:1 on cards */
+  --faint: #3a4350;       /* decoration only, never text */
+  --snow: #aebccb;
+  --lamp: #f3f1e8;        /* the streetlight */
+  --lamp-glow: rgba(243, 241, 232, 0.32);
+  --lamp-wash: rgba(243, 241, 232, 0.06);
+
+  --serif: var(--font-newsreader), Georgia, serif;
+  --display: var(--font-display), var(--font-newsreader), Georgia, serif;
+  --sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --measure: 650px;
+  --wide: 820px;
+  --page: 1100px;
+  --gutter: 1.5rem;
+  --pole-x: min(calc(50% + 395px), calc(100% - 26px));
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 2rem;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 15.5px;
+  line-height: 1.65;
+  font-feature-settings: "kern", "calt";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+/* Film grain: one 200px SVG tile, rasterized once, never repainted. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Low fog that sits on the bottom of the window. Static, so it costs nothing. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: auto 0 0;
+  height: 22vh;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(118, 129, 145, 0.045), transparent);
+}
+
+::selection {
+  background: rgba(239, 233, 213, 0.18);
+  color: var(--lamp);
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: calc(var(--measure) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+main.wrap {
+  flex: 1;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 60;
+  padding: 0.4rem 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.skip:focus {
+  top: 1rem;
+}
+
+/* ---------------------------------------------------------------- Night --
+   The streetlamp scene at the top of every page. Decorative markup that sits
+   behind the header and scrolls away with it. */
+
+.night {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 420px;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.night__wire {
+  position: absolute;
+  top: 0;
+  height: 150px;
+  overflow: visible;
+}
+
+.night__wire--l {
+  left: 0;
+  width: var(--pole-x);
+}
+
+.night__wire--r {
+  left: var(--pole-x);
+  width: calc(100% - var(--pole-x));
+}
+
+.night__wire path {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.night__pole {
+  position: absolute;
+  top: 18px;
+  bottom: 0;
+  left: var(--pole-x);
+  width: 3px;
+  margin-left: -1px;
+  background: linear-gradient(to bottom, #1c212a, #12161c 55%, transparent);
+}
+
+.night__arm {
+  position: absolute;
+  top: 14px;
+  left: calc(var(--pole-x) - 58px);
+  width: 62px;
+  height: 30px;
+  overflow: visible;
+}
+
+.night__arm path {
+  fill: none;
+  stroke: #1f242d;
+  stroke-width: 2;
+}
+
+.night__light {
+  position: absolute;
+  inset: 0;
+  animation: flicker 19s linear infinite;
+}
+
+/* Halation around the lamp, then a soft cone falling down from it. */
+.night__light::before {
+  content: "";
+  position: absolute;
+  top: -150px;
+  left: calc(var(--pole-x) - 53px - 260px);
+  width: 520px;
+  height: 340px;
+  background: radial-gradient(
+    closest-side,
+    rgba(239, 233, 213, 0.11),
+    rgba(150, 165, 190, 0.035) 55%,
+    transparent
+  );
+}
+
+.night__light::after {
+  content: "";
+  position: absolute;
+  top: 28px;
+  left: calc(var(--pole-x) - 53px - 170px);
+  width: 340px;
+  height: 392px;
+  clip-path: polygon(46% 0, 54% 0, 100% 100%, 0 100%);
+  background: linear-gradient(to bottom, rgba(239, 233, 213, 0.045), transparent 85%);
+}
+
+.night__bulb {
+  position: absolute;
+  top: 25px;
+  left: calc(var(--pole-x) - 61px);
+  width: 16px;
+  height: 4px;
+  border-radius: 0 0 8px 8px;
+  background: var(--lamp);
+  box-shadow:
+    0 0 6px 1px var(--lamp-glow),
+    0 2px 22px 4px rgba(239, 233, 213, 0.14);
+}
+
+/* A worn lamp that drops out for a beat now and then. Opacity only, so it
+   runs on the compositor. */
+@keyframes flicker {
+  0%, 61%, 61.6%, 62.4%, 100% { opacity: 1; }
+  61.3% { opacity: 0.45; }
+  62% { opacity: 0.7; }
+  88% { opacity: 1; }
+  88.4% { opacity: 0.82; }
+  88.8% { opacity: 1; }
+}
+
+/* --------------------------------------------------------------- Header -- */
+
+.site-header {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-top: 5.25rem;
+  margin-bottom: 4.25rem;
+  view-transition-name: site-header;
+}
+
+.site-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.lamp-dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--lamp);
+  box-shadow: 0 0 8px 2px var(--lamp-glow);
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.35rem;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.site-nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--text);
+}
+
+.site-nav a[aria-current="page"]::before {
+  content: "· ";
+  color: var(--lamp);
+}
+
+.ext::after {
+  content: " ↗";
+  font-family: var(--mono);
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+/* ----------------------------------------------------------- Typography -- */
+
+h1,
+h2,
+h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.2rem);
+  line-height: 1.2;
+}
+
+p {
+  margin: 0 0 1.15rem;
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition:
+    color 180ms ease,
+    text-decoration-color 180ms ease,
+    text-shadow 180ms ease;
+}
+
+a:hover {
+  color: var(--lamp);
+  text-decoration-color: var(--lamp);
+  text-shadow: 0 0 14px var(--lamp-glow);
+}
+
+:focus-visible {
+  outline: 1.5px solid var(--lamp);
+  outline-offset: 3px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 5px rgba(239, 233, 213, 0.08);
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2.75rem 0;
+}
+
+.label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 0 0 1rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.label span {
+  color: var(--dim);
+}
+
+/* ----------------------------------------------------------------- Hero --
+   A full-screen night road. Layers, back to front: CSS sky, SVG hills and
+   tower, SVG road/poles/lamp, WebGL fog and snow, then the type. */
+
+.wide {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: calc(var(--page) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* On the homepage the name is the hero itself; the corner keeps only the lamp. */
+.site-header--overlay .site-title {
+  font-size: 0;
+  gap: 0;
+}
+
+.site-header--overlay .lamp-dot {
+  width: 7px;
+  height: 7px;
+}
+
+.site-header--overlay {
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 5;
+  padding-top: 2.25rem;
+  margin: 0 auto;
+}
+
+.hero {
+  --hero-h: clamp(600px, 100svh, 1080px);
+  /* On tall screens the land is shorter than the hero, so the lamp sits
+     below the name instead of on it, with open sky above. */
+  --land-k: 1;
+  --land-w: max(100vw, calc(var(--hero-h) * var(--land-k) * 16 / 9));
+  position: relative;
+  height: var(--hero-h);
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(60% 40% at 50% 66%, rgba(120, 104, 96, 0.1), transparent 70%),
+    linear-gradient(to bottom, #0a0d12 0%, #121821 38%, #1d2530 60%, #28313e 67%, #28313e 100%);
+}
+
+/* On narrow screens the 16:9 landscape is wider than the window. Keep the
+   road and the lamp in frame instead of cropping to the middle. */
+.hero__land {
+  position: absolute;
+  bottom: 0;
+  height: calc(100% * var(--land-k));
+  width: var(--land-w);
+  left: clamp(calc(100vw - var(--land-w)), calc(50vw - var(--land-w) * 0.6), 0px);
+}
+
+@media (max-aspect-ratio: 4/5) {
+  .hero { --land-k: 0.7; }
+  .hero__land {
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%);
+    mask-image: linear-gradient(to bottom, transparent, #000 22%);
+  }
+}
+
+.hero__land svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__lamplight {
+  animation: flicker 23s linear infinite;
+}
+
+.hero__bulb {
+  filter: drop-shadow(0 0 6px rgba(251, 248, 238, 0.9));
+}
+
+.hero__atmo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.6s ease;
+}
+
+.hero__atmo.is-on {
+  opacity: 1;
+}
+
+/* The road dissolves into the page instead of ending on a hard edge. */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 26%;
+  z-index: 2;
+  background: linear-gradient(to bottom, transparent, rgba(12, 15, 20, 0.7) 55%, var(--bg));
+  pointer-events: none;
+}
+
+.hero__copy {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: clamp(8rem, 24vh, 15rem);
+  pointer-events: none;
+}
+
+.hero__copy > * {
+  pointer-events: auto;
+}
+
+.hero__kicker {
+  margin: 0 0 0.9rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--snow);
+  opacity: 0.85;
+}
+
+.hero__name {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(3.6rem, 2rem + 8vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+  color: var(--text);
+  text-shadow: 0 2px 40px rgba(8, 10, 14, 0.6);
+}
+
+.hero__line {
+  max-width: 30ch;
+  margin: 1.4rem 0 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(1.15rem, 1rem + 0.6vw, 1.45rem);
+  line-height: 1.4;
+  color: var(--snow);
+  text-wrap: balance;
+}
+
+.hero__down {
+  position: absolute;
+  left: 50%;
+  bottom: 2.25rem;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  translate: -50% 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--snow);
+  text-decoration: none;
+}
+
+.hero__arrow {
+  animation: nudge 2.6s var(--ease) infinite;
+}
+
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(5px); opacity: 1; }
+}
+
+/* Parallax without JS: as the page scrolls past the hero, the far hills sink
+   slower than the road and the name lifts away into the fog. */
+@supports (animation-timeline: scroll()) {
+  .hero__back,
+  .hero__copy,
+  .hero__atmo {
+    animation-timing-function: linear;
+    animation-fill-mode: both;
+    animation-timeline: scroll(root);
+    animation-range: 0 var(--hero-h);
+  }
+
+  .hero__back { animation-name: sink; }
+  .hero__copy { animation-name: lift; }
+
+  @keyframes sink { to { translate: 0 22%; } }
+  @keyframes lift { to { translate: 0 -40%; opacity: 0; filter: blur(4px); } }
+}
+
+/* ---------------------------------------------------------------- Home -- */
+
+.wrap--home {
+  max-width: none;
+  padding-inline: 0;
+}
+
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 2rem 4rem;
+  align-items: end;
+  margin: 1rem auto 6rem;
+}
+
+.about__bio {
+  max-width: 46ch;
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(1.25rem, 1.1rem + 0.5vw, 1.5rem);
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.now {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  margin: 1.5rem 0 0;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.now a {
+  color: var(--text);
+}
+
+.pulse {
+  position: relative;
+  top: -1px;
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--lamp);
+  box-shadow: 0 0 8px 1px var(--lamp-glow);
+  animation: pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: 0.35; box-shadow: 0 0 2px 0 var(--lamp-glow); }
+}
+
+.elsewhere {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border);
+}
+
+.elsewhere li {
+  border-bottom: 1px solid var(--border);
+}
+
+.elsewhere li:nth-child(odd) {
+  border-right: 1px solid var(--border);
+}
+
+.elsewhere a {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 0.85rem 0.95rem;
+  text-decoration: none;
+  color: var(--text);
+  transition: background-color 200ms ease, color 180ms ease;
+}
+
+.elsewhere a:hover {
+  background: var(--surface);
+  text-shadow: none;
+}
+
+.elsewhere a span {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+  transition: color 180ms ease, transform 220ms var(--ease);
+}
+
+.elsewhere a:hover span {
+  color: var(--lamp);
+  transform: translate(2px, -2px);
+}
+
+.projects {
+  margin: 0 auto 6rem;
+}
+
+/* ---------------------------------------------------------------- Cards --
+   Each project is a small night of its own, generated from its slug. The
+   lamp in the scene comes on when the card is hovered or focused. */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: linear-gradient(to bottom, var(--surface-2), var(--surface) 40%);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color 300ms ease,
+    transform 400ms var(--ease),
+    box-shadow 400ms ease;
+}
+
+.card:hover,
+.card:focus-visible {
+  color: inherit;
+  text-shadow: none;
+  border-color: var(--border-strong);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(243, 241, 232, 0.03);
+}
+
+.card__scene {
+  position: relative;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+
+.card__scene svg,
+.banner svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.card .v-lamp {
+  opacity: 0.4;
+  transition: opacity 600ms ease;
+}
+
+.card .v-bulb {
+  opacity: 0.55;
+  transition: opacity 300ms ease;
+}
+
+.card:hover .v-lamp,
+.card:focus-visible .v-lamp {
+  opacity: 1;
+}
+
+.card:hover .v-bulb,
+.card:focus-visible .v-bulb {
+  opacity: 1;
+}
+
+.card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.15rem 1.3rem 1.25rem;
+}
+
+.card__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 0 0 0.7rem;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.12rem 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 99px;
+  color: var(--muted);
+}
+
+.tag--live {
+  color: var(--lamp);
+  border-color: rgba(243, 241, 232, 0.25);
+}
+
+.tag--live::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--lamp);
+  box-shadow: 0 0 6px 1px var(--lamp-glow);
+  animation: pulse 2.8s ease-in-out infinite;
+}
+
+.card__title {
+  margin: 0 0 0.55rem;
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  transition: color 200ms ease, text-shadow 200ms ease;
+}
+
+.card:hover .card__title,
+.card:focus-visible .card__title {
+  color: var(--lamp);
+  text-shadow: 0 0 16px var(--lamp-glow);
+}
+
+.card__desc {
+  margin: 0 0 1rem;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.card__tools {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: auto 0 0;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+}
+
+.card__go {
+  color: var(--muted);
+  transition: transform 300ms var(--ease), color 200ms ease;
+}
+
+.card:hover .card__go {
+  transform: translateX(4px);
+  color: var(--lamp);
+}
+
+@media (min-width: 1000px) {
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .cards .card:not(.card--feature) .card__title {
+    font-size: 1.18rem;
+  }
+}
+
+@media (min-width: 820px) {
+  .card--feature {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+
+  .card--feature .card__scene {
+    aspect-ratio: auto;
+    min-height: 300px;
+    border-bottom: 0;
+    border-right: 1px solid var(--border);
+  }
+
+  .card--feature .card__body {
+    padding: 1.75rem 1.75rem 1.6rem;
+  }
+
+  .card--feature .card__title {
+    font-size: 1.75rem;
+  }
+}
+
+/* --------------------------------------------------------------- Photos -- */
+
+.photo {
+  position: relative;
+  margin: 0 0 4rem;
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.photo--band img {
+  height: clamp(320px, 56vw, 760px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 70%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 70%, transparent);
+}
+
+.photo--banner {
+  margin: -1rem calc(50% - 50vw) 3rem;
+}
+
+.photo--banner img {
+  height: clamp(220px, 34vw, 440px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 50%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 18%, #000 50%, transparent);
+}
+
+/* The photo at the end of a write-up: full width, short, fading in and out
+   so the article runs into it and the pager comes out of it. */
+.photo--closer {
+  margin: 4rem calc(50% - 50vw) 2rem;
+}
+
+.photo--closer img {
+  height: clamp(240px, 36vw, 480px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 65%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 30%, #000 65%, transparent);
+}
+
+.photo figcaption {
+  position: absolute;
+  right: var(--gutter);
+  bottom: 12%;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.photo figcaption a {
+  color: var(--muted);
+}
+
+.footer-credits {
+  margin: 0;
+  padding: 0 0 1.25rem;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+}
+
+.footer-credits a {
+  color: var(--muted);
+}
+
+/* The project's own scene, at the top of its write-up. */
+.banner {
+  aspect-ratio: 8 / 3;
+  margin: 0 0 2rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+@media (max-width: 760px) {
+  .about {
+    grid-template-columns: 1fr;
+    margin-bottom: 4rem;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__copy {
+    padding-top: clamp(9rem, 30vh, 14rem);
+  }
+}
+
+
+/* -------------------------------------------------------------- Article -- */
+
+.article-head {
+  margin-bottom: 2.5rem;
+}
+
+.back {
+  display: inline-block;
+  margin-bottom: 2rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.back .arrow {
+  margin: 0 0.35rem 0 0;
+}
+
+.back:hover .arrow {
+  transform: translateX(-4px);
+}
+
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.1rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.dek {
+  margin: 0 0 1.5rem;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.12rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem 1.5rem;
+  padding: 0.85rem 0;
+  border-block: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+}
+
+.toolbar a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.toolbar a:hover {
+  color: var(--lamp);
+}
+
+/* Prose. Text holds a 650px measure; figures, tables and plots step out to
+   820px on wide screens. */
+.prose {
+  display: grid;
+  grid-template-columns:
+    [full-start] minmax(0, 1fr)
+    [content-start] min(100%, var(--measure)) [content-end]
+    minmax(0, 1fr) [full-end];
+  font-size: 16px;
+  line-height: 1.72;
+}
+
+.prose > * {
+  grid-column: content;
+}
+
+@media (min-width: 900px) {
+  .prose {
+    margin-inline: calc((var(--measure) - var(--wide)) / 2);
+    grid-template-columns:
+      [full-start wide-start] minmax(0, 1fr)
+      [content-start] var(--measure) [content-end]
+      minmax(0, 1fr) [wide-end full-end];
+  }
+
+  .prose > .table-wrap,
+  .prose > p:has(> img:only-child),
+  .prose > iframe {
+    grid-column: wide;
+  }
+}
+
+.prose h2 {
+  position: relative;
+  margin: 3.25rem 0 1rem;
+  font-size: 1.55rem;
+  line-height: 1.25;
+}
+
+.prose h3 {
+  margin: 2.25rem 0 0.75rem;
+  font-size: 1.2rem;
+}
+
+.prose .anchor {
+  position: absolute;
+  right: 100%;
+  padding-right: 0.55rem;
+  font-family: var(--mono);
+  font-size: 0.75em;
+  color: var(--faint);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.prose h2:hover .anchor,
+.prose .anchor:focus-visible {
+  opacity: 1;
+}
+
+.prose p,
+.prose li {
+  color: #c3cad3;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.prose em {
+  color: var(--text);
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.3rem;
+  padding-left: 1.3rem;
+}
+
+.prose li {
+  margin-bottom: 0.45rem;
+  padding-left: 0.3rem;
+}
+
+.prose ul > li::marker {
+  content: "–  ";
+  color: var(--faint);
+  font-family: var(--mono);
+}
+
+.prose ol > li::marker {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.85em;
+}
+
+.prose code {
+  padding: 0.12em 0.4em;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 0.83em;
+  color: var(--text);
+}
+
+.prose blockquote {
+  margin: 0 0 1.3rem;
+  padding-left: 1.1rem;
+  border-left: 1px solid var(--lamp);
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+/* Lamp-lit prints: the figures keep their real colors (they encode data),
+   sit slightly dimmed under the lamp, and come up to full brightness when
+   hovered. */
+.prose p:has(> img:only-child) {
+  margin: 2rem 0 2.25rem;
+}
+
+.prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: var(--surface);
+  filter: brightness(0.86) sepia(0.06);
+  box-shadow:
+    0 0 0 1px rgba(239, 233, 213, 0.06),
+    0 18px 50px -20px rgba(239, 233, 213, 0.16);
+  transition: filter 400ms ease;
+}
+
+.prose img:hover {
+  filter: none;
+}
+
+.prose iframe {
+  display: block;
+  width: 100%;
+  margin: 1.75rem 0 2.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: linear-gradient(to bottom, #0b0e12, var(--bg));
+  color-scheme: dark;
+}
+
+.table-wrap {
+  margin: 1.75rem 0 2.25rem;
+  overflow-x: auto;
+  border-block: 1px solid var(--border-strong);
+}
+
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.table-wrap th {
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--border-strong);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  text-align: left;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.table-wrap td {
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  color: #c3cad3;
+  vertical-align: top;
+}
+
+.table-wrap tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-wrap tbody tr {
+  transition: background-color 160ms ease;
+}
+
+.table-wrap tbody tr:hover {
+  background: rgba(17, 20, 27, 0.7);
+}
+
+.table-wrap td strong {
+  color: var(--lamp);
+  font-weight: 600;
+}
+
+/* Table of contents: lives in the left margin on wide screens only. */
+.toc {
+  display: none;
+}
+
+@media (min-width: 1240px) {
+  .toc {
+    display: block;
+    position: fixed;
+    top: 11rem;
+    left: calc(50% - var(--measure) / 2 - 15.5rem);
+    width: 12.5rem;
+    z-index: 2;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    scroll-target-group: auto;
+    /* Fades out as the closing photo scrolls in, so the fixed TOC never sits
+       on top of it or the pager. Pages without that photo keep it visible. */
+    animation: toc-out linear both;
+    animation-timeline: --closer;
+    animation-range: entry 0% entry 50%;
+  }
+
+  body:has(.photo--closer) {
+    timeline-scope: --closer;
+  }
+
+  .photo--closer {
+    view-timeline: --closer;
+  }
+
+  @keyframes toc-out {
+    to { opacity: 0; visibility: hidden; }
+  }
+
+  .toc p {
+    margin: 0 0 0.8rem;
+    color: var(--dim);
+  }
+
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-left: 1px solid var(--border);
+  }
+
+  .toc a {
+    display: block;
+    padding: 0.32rem 0 0.32rem 0.9rem;
+    margin-left: -1px;
+    border-left: 1px solid transparent;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    color: var(--lamp);
+    text-shadow: none;
+  }
+}
+
+/* Chrome 140+: highlights the section currently on screen, no JS. Kept in
+   its own block so browsers that don't know the selector skip only this. */
+@supports selector(:target-current) {
+  .toc a:target-current {
+    color: var(--lamp);
+    border-left-color: var(--lamp);
+  }
+}
+
+/* Reading progress: a hairline of lamplight driven by scroll position. */
+.progress {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .progress {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto;
+    height: 1px;
+    z-index: 40;
+    background: var(--lamp);
+    box-shadow: 0 0 10px var(--lamp-glow);
+    transform-origin: 0 50%;
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Next and previous write-ups. */
+.pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 3.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pager a {
+  display: block;
+  height: 100%;
+  padding: 0.95rem 1.05rem 1.05rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease;
+}
+
+.pager a:hover {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  text-shadow: none;
+}
+
+.pager .newer {
+  grid-column: 2;
+  text-align: right;
+}
+
+.pager small {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.pager span {
+  font-family: var(--serif);
+  font-size: 1.02rem;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.pager a:hover span {
+  color: var(--lamp);
+}
+
+/* -------------------------------------------------------------- Contact -- */
+
+.contact dl {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr;
+  margin: 0;
+  border-top: 1px solid var(--border);
+}
+
+.contact dt,
+.contact dd {
+  margin: 0;
+  padding: 1.05rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.contact dt {
+  padding-top: 1.25rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.contact dd {
+  font-size: 16px;
+}
+
+.contact dd a + a {
+  margin-left: 1.25rem;
+}
+
+.copy {
+  margin-left: 0.85rem;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--muted);
+  font: 12px var(--mono);
+  cursor: pointer;
+  transition: color 180ms ease, border-color 180ms ease;
+}
+
+.copy:hover {
+  color: var(--lamp);
+  border-color: var(--lamp);
+}
+
+.copy[data-done] {
+  color: var(--lamp);
+}
+
+/* ---------------------------------------------------------------- Footer -- */
+
+.site-footer {
+  position: relative;
+  z-index: 1;
+  margin-top: 6rem;
+}
+
+.footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.2rem;
+}
+
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: var(--lamp);
+}
+
+/* The treeline is generated at build time and cached as one SVG file. */
+.treeline {
+  height: 132px;
+  background: url("/treeline.svg") center bottom / auto 132px repeat-x;
+}
+
+/* ------------------------------------------------------------------ Cat --
+   A CSS-only port of the old ASCII cat. It blinks, swishes its tail, watches
+   whatever link you hover, dozes off if left alone, and purrs when hovered.
+   Every state is a stacked frame shown with opacity. */
+
+.cat {
+  display: none;
+}
+
+@media (min-width: 1100px) and (hover: hover) {
+  .cat {
+    display: block;
+    position: fixed;
+    right: 1.75rem;
+    bottom: 1.4rem;
+    z-index: 30;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.18;
+    color: #545e6c;
+    white-space: pre;
+    cursor: default;
+    user-select: none;
+    transition: color 300ms ease;
+  }
+}
+
+.cat:hover {
+  color: var(--muted);
+}
+
+.cat .row {
+  display: block;
+}
+
+.cat .slot {
+  display: inline-grid;
+}
+
+.cat .slot--block {
+  display: grid;
+}
+
+.cat .slot > * {
+  grid-area: 1 / 1;
+}
+
+.cat .face {
+  color: var(--muted);
+}
+
+.cat .zzz,
+.cat .heart,
+.cat .f-blink,
+.cat .f-look,
+.cat .f-happy,
+.cat .f-sleep,
+.cat .t-r,
+.cat .t-u,
+.cat .t-l {
+  opacity: 0;
+}
+
+/* Idle loop: blink every few seconds, swish now and then. The two cycles use
+   different lengths so they drift apart and never feel mechanical. */
+.cat .f-open {
+  animation: hide-blink 5.3s infinite, doze-out 1ms 45s forwards;
+}
+
+.cat .f-blink {
+  animation: show-blink 5.3s infinite, doze-out 1ms 45s forwards;
+}
+
+.cat .t-d {
+  animation: hide-swish 11.7s infinite, doze-in 1ms 45s forwards;
+}
+
+.cat .t-r { animation: swish-r 11.7s infinite, doze-out 1ms 45s forwards; }
+.cat .t-u { animation: swish-u 11.7s infinite, doze-out 1ms 45s forwards; }
+.cat .t-l { animation: swish-l 11.7s infinite, doze-out 1ms 45s forwards; }
+
+.cat .f-sleep,
+.cat .zzz {
+  animation: doze-in 1ms 45s forwards;
+}
+
+.cat .zzz i {
+  display: inline-block;
+  width: 3ch;
+  overflow: hidden;
+  font-style: normal;
+  vertical-align: bottom;
+  animation: snore 3.2s steps(3, jump-none) infinite;
+}
+
+@keyframes show-blink {
+  0%, 93%, 100% { opacity: 0; }
+  93.1%, 96% { opacity: 1; }
+}
+
+@keyframes hide-blink {
+  0%, 93%, 100% { opacity: 1; }
+  93.1%, 96% { opacity: 0; }
+}
+
+@keyframes hide-swish {
+  0%, 74.9% { opacity: 1; }
+  75%, 99.9% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes swish-r {
+  0%, 74.9%, 81.25%, 100% { opacity: 0; }
+  75%, 81.2% { opacity: 1; }
+}
+
+@keyframes swish-u {
+  0%, 81.2%, 87.5%, 93.7%, 100% { opacity: 0; }
+  81.25%, 87.45%, 93.75%, 99.9% { opacity: 1; }
+}
+
+@keyframes swish-l {
+  0%, 87.45%, 93.75%, 100% { opacity: 0; }
+  87.5%, 93.7% { opacity: 1; }
+}
+
+@keyframes doze-in {
+  to { opacity: 1; }
+}
+
+@keyframes doze-out {
+  to { opacity: 0; }
+}
+
+@keyframes snore {
+  from { width: 1ch; }
+  to { width: 3ch; }
+}
+
+@keyframes wag-r {
+  0%, 24.9% { opacity: 1; }
+  25%, 100% { opacity: 0; }
+}
+
+@keyframes wag-u {
+  0%, 24.9%, 50%, 74.9% { opacity: 0; }
+  25%, 49.9%, 75%, 100% { opacity: 1; }
+}
+
+@keyframes wag-l {
+  0%, 49.9%, 75%, 100% { opacity: 0; }
+  50%, 74.9% { opacity: 1; }
+}
+
+/* Watching: hovering any link resets the doze timer and the cat looks over
+   toward the page. */
+body:has(main a:hover, .site-header a:hover, .site-footer a:hover) .cat :is(.f-open, .f-blink, .f-sleep, .zzz, .t-d, .t-r, .t-u, .t-l) {
+  animation: none;
+}
+
+body:has(main a:hover, .site-header a:hover, .site-footer a:hover) .cat .f-open {
+  opacity: 0;
+}
+
+body:has(main a:hover, .site-header a:hover, .site-footer a:hover) .cat .f-look {
+  opacity: 1;
+}
+
+/* Petting: hover the cat. */
+.cat:hover :is(.f-open, .f-blink, .f-look, .f-sleep, .zzz, .t-d) {
+  animation: none;
+  opacity: 0;
+}
+
+.cat:hover .f-happy,
+.cat:hover .heart {
+  opacity: 1;
+}
+
+.cat:hover .heart {
+  color: var(--lamp);
+  text-shadow: 0 0 10px var(--lamp-glow);
+}
+
+.cat:hover .t-r { animation: wag-r 1.1s infinite; }
+.cat:hover .t-u { animation: wag-u 1.1s infinite; }
+.cat:hover .t-l { animation: wag-l 1.1s infinite; }
+
+/* -------------------------------------------------------------- 404 page -- */
+
+.lost p {
+  color: var(--muted);
+}
+
+/* ------------------------------------------------- Page transitions (MPA) --
+   Same-origin navigations cross-fade natively. Project titles carry a shared
+   view-transition-name, so the title on the home page flies into place as
+   the article heading. Browsers without support just navigate normally. */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 160ms ease both vt-out;
+}
+
+::view-transition-new(root) {
+  animation: 300ms var(--ease) both vt-in;
+}
+
+::view-transition-group(*) {
+  animation-duration: 420ms;
+  animation-timing-function: var(--ease);
+}
+
+/* Scenes morph from card to banner. Crop rather than squash when the two
+   shapes differ. */
+::view-transition-old(.scene),
+::view-transition-new(.scene) {
+  height: 100%;
+  object-fit: cover;
+}
+
+::view-transition-group(.scene) {
+  animation-duration: 520ms;
+}
+
+@keyframes vt-out {
+  to { opacity: 0; }
+}
+
+@keyframes vt-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* ---------------------------------------------------------------- Mobile -- */
+
+@media (max-width: 560px) {
+  :root {
+    --gutter: 1.25rem;
+  }
+
+  .site-header {
+    flex-direction: column;
+    gap: 0.85rem;
+    padding-top: 4.25rem;
+    margin-bottom: 3rem;
+  }
+
+  .project-list {
+    margin-inline: -0.75rem;
+  }
+
+  .project-row {
+    padding: 0.9rem 0.75rem;
+  }
+
+  .project-top {
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .project-meta {
+    order: -1;
+  }
+
+  .elsewhere {
+    grid-template-columns: 1fr;
+  }
+
+  .elsewhere li:nth-child(odd) {
+    border-right: 0;
+  }
+
+  .contact dl {
+    grid-template-columns: 1fr;
+  }
+
+  .contact dt {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .contact dd {
+    padding-top: 0.25rem;
+  }
+
+  .pager {
+    grid-template-columns: 1fr;
+  }
+
+  .pager .newer {
+    grid-column: auto;
+    grid-row: 1;
+  }
+
+  .night__light::after {
+    opacity: 0.6;
+  }
+}
+
+/* ----------------------------------------------------------- Accessibility -- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .night__light,
+  .hero__lamplight,
+  .hero__arrow,
+  .hero__back,
+  .hero__copy,
+  .tag--live::before,
+  .pulse,
+  .cat *,
+  .zzz i {
+    animation: none !important;
+  }
+
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ Print --
+   Write-ups get printed. Black on white, with the real URLs spelled out. */
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    background: #fff;
+    color: #111;
+    font-size: 11pt;
+  }
+
+  body::before,
+  body::after,
+  .night,
+  .hero__land,
+  .hero__atmo,
+  .hero__down,
+  .photo,
+  .banner,
+  .site-nav,
+  .toc,
+  .progress,
+  .pager,
+  .cat,
+  .treeline,
+  .back,
+  .skip {
+    display: none !important;
+  }
+
+  .site-header {
+    margin-bottom: 1.5rem;
+    padding-top: 0;
+  }
+
+  h1, h2, h3, .site-title, .prose strong, .prose p, .prose li, .table-wrap td {
+    color: #111;
+  }
+
+  .dek, .article-meta, .toolbar, .label, .table-wrap th {
+    color: #555;
+  }
+
+  a {
+    color: #111;
+    text-shadow: none;
+  }
+
+  .prose a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #555;
+  }
+
+  .prose img {
+    filter: none;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .prose iframe {
+    display: none;
+  }
+
+  .prose code {
+    background: #f3f3f3;
+    border-color: #ddd;
+    color: #111;
+  }
+}

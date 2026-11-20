@@ -1,0 +1,53 @@
+---
+import "../styles/global.css";
+import Base from "../layouts/Base.astro";
+import Hero from "../components/Hero.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import Photo from "../components/Photo.astro";
+import { getProjects } from "../lib/projects";
+import { site } from "../site";
+
+const projects = await getProjects();
+const active = projects.find((p) => p.data.summary.startsWith("In progress"));
+const shortTitle = (t: string) => (t.includes("?") ? t.slice(0, t.indexOf("?") + 1) : t);
+
+const person = {
+  "@type": "Person",
+  name: site.name,
+  url: site.url,
+  jobTitle: site.role,
+  affiliation: { "@type": "CollegeOrUniversity", name: "University of California, San Diego" },
+  sameAs: [site.github, site.linkedin],
+};
+---
+<Base title="Scene" jsonLd={person} hero noindex>
+  <Hero slot="hero" />
+
+  <section class="about wide" aria-labelledby="about-label">
+    <div>
+      <h2 class="label" id="about-label">about</h2>
+      <p class="about__bio">{site.bio}</p>
+      {active && (
+        <p class="now">
+          <span class="pulse" aria-hidden="true"></span>
+          <span>in progress: <a href={`/projects/${active.id}`}>{shortTitle(active.data.title)}</a></span>
+        </p>
+      )}
+    </div>
+    <ul class="elsewhere" aria-label="Elsewhere">
+      <li><a href={site.github} target="_blank" rel="noopener">GitHub <span>↗</span></a></li>
+      <li><a href={site.linkedin} target="_blank" rel="noopener">LinkedIn <span>↗</span></a></li>
+      <li><a href={site.cv} target="_blank" rel="noopener">CV <span>↗</span></a></li>
+      <li><a href="/contact">Email <span>→</span></a></li>
+    </ul>
+  </section>
+
+  <section id="projects" class="projects wide" aria-labelledby="projects-label">
+    <h2 class="label" id="projects-label">projects <span>{String(projects.length).padStart(2, "0")}</span></h2>
+    <div class="cards">
+      {projects.map((p, i) => <ProjectCard project={p} feature={i === 0} />)}
+    </div>
+  </section>
+
+  <Photo name="road" />
+</Base>

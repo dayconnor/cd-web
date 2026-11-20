@@ -1,0 +1,26 @@
+---
+// CSS-only ASCII cat. Each changing part of the drawing (the space above its
+// head, its face, and its lower body plus tail) is a "slot" holding every
+// frame stacked in one grid cell; global.css decides which frame shows.
+const tails = {
+  d: ["", "", "___~"],
+  r: ["   )", "  (", "__/"],
+  u: ["  |", "  |", "__/"],
+  l: [" (", "  )", "__/"],
+};
+const lower = (t: string[]) =>
+  [` /     \\ ${t[0]}`, `(  | |  )${t[1]}`, ` \\_|_|_/${t[2]}`].join("\n");
+const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const span = (cls: string, text: string) => `<span class="${cls}">${esc(text)}</span>`;
+
+const html = [
+  `<span class="row">    <span class="slot">${span("blank", "   ")}<span class="zzz"><i>zZz</i></span>${span("heart", " <3")}</span></span>`,
+  `<span class="row">${esc("  /\\_/\\")}</span>`,
+  `<span class="row"> (<span class="slot face">${span("f-open", " o.o ")}${span("f-blink", " -.- ")}${span("f-look", "o.o  ")}${span("f-sleep", " -.- ")}${span("f-happy", " ^.^ ")}</span>)</span>`,
+  `<span class="row">${esc("  > ^ <")}</span>`,
+  `<span class="slot slot--block">${Object.entries(tails)
+    .map(([k, t]) => span(`t-${k}`, lower(t)))
+    .join("")}</span>`,
+].join("");
+---
+<div class="cat" aria-hidden="true" title="hi" set:html={html} />

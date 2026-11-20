@@ -1,0 +1,103 @@
+---
+// A write-up: the project's photograph full strength under the title, fading
+// to near black for reading, and back again at the end with the older and
+// newer write-ups in opposite corners.
+import "../../styles/site.css";
+import type { GetStaticPaths } from "astro";
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Heading from "../../components/Heading.astro";
+import Table from "../../components/Table.astro";
+import Link from "../../components/Link.astro";
+import { getProjects, isoDay, isoMonth, readingMinutes, projectPhoto, type Project } from "../../lib/projects";
+import { site } from "../../site";
+
+export const getStaticPaths = (async () => {
+  const all = await getProjects({ includeDrafts: true });
+  const listed = all.filter((p) => !p.data.draft);
+  return all.map((entry) => {
+    const i = listed.indexOf(entry);
+    return {
+      params: { slug: entry.id },
+      props: {
+        entry,
+        newer: i > 0 ? listed[i - 1] : undefined,
+        older: i >= 0 && i < listed.length - 1 ? listed[i + 1] : undefined,
+      },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+interface Props { entry: Project; newer?: Project; older?: Project }
+const { entry, newer, older } = Astro.props;
+const { Content, headings } = await render(entry);
+const { title, label, summary, date, tools, repo } = entry.data;
+const sections = headings.filter((h) => h.depth === 2);
+const repoName = repo.replace(/^https?:\/\/github\.com\//, "");
+const live = summary.startsWith("In progress");
+const dek = summary.replace(/^In progress\.\s*/, "");
+
+const article = {
+  "@type": "Article",
+  headline: title,
+  description: summary,
+  datePublished: isoDay(date),
+  url: `${site.url}/projects/${entry.id}`,
+  image: `${site.url}/og/${entry.id}.png`,
+  author: { "@type": "Person", name: site.name, url: site.url },
+};
+---
+<Base
+  title={title}
+  description={summary}
+  ogImage={`/og/${entry.id}.png`}
+  type="article"
+  current="projects"
+  jsonLd={article}
+  published={date}
+  photo={projectPhoto(entry)}
+>
+  <div class="progress" aria-hidden="true"></div>
+
+  <article>
+    <header class="cover">
+      <div class="cover__words">
+        <p class="kicker"><a href="/#projects">projects</a> / {label}</p>
+        <h1>{title}</h1>
+        <p class="dek">{dek}</p>
+      </div>
+      <ul class="facts">
+        {live && <li>in progress</li>}
+        <li><time datetime={isoDay(date)}>{isoDay(date)}</time></li>
+        <li>{readingMinutes(entry.body)} min read</li>
+        <li>{tools.join(" / ").toLowerCase()}</li>
+        <li><a href={repo} class="ext" target="_blank" rel="noopener">{repoName}</a></li>
+      </ul>
+    </header>
+
+    <div class="reading">
+      <div class="prose">
+        <Content components={{ h2: Heading, table: Table, a: Link }} />
+      </div>
+      {sections.length > 2 && (
+        <nav class="toc" aria-label="On this page">
+          <p>on this page</p>
+          <ol>{sections.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+        </nav>
+      )}
+    </div>
+  </article>
+
+  <div class="outro">
+    {(newer || older) && (
+      <ul class="pager" aria-label="More write-ups">
+        {older && (
+          <li class="older"><a href={`/projects/${older.id}`}><small>← older · {isoMonth(older.data.date)}</small><span>{older.data.label}</span></a></li>
+        )}
+        {newer && (
+          <li class="newer"><a href={`/projects/${newer.id}`}><small>newer · {isoMonth(newer.data.date)} →</small><span>{newer.data.label}</span></a></li>
+        )}
+      </ul>
+    )}
+  </div>
+</Base>

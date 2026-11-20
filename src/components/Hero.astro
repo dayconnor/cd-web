@@ -1,0 +1,31 @@
+---
+// The homepage opens on a night road. The landscape is static SVG generated
+// at build time; the fog and snow are drawn over it by a small WebGL script
+// once the page is idle. Scrolling moves the layers apart (scroll-driven CSS).
+import { heroScene } from "../lib/scene";
+import { site } from "../site";
+
+const { back, front } = heroScene();
+---
+<section class="hero" aria-labelledby="hero-name">
+  <div class="hero__land" aria-hidden="true">
+    <svg class="hero__back" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" focusable="false" set:html={back} />
+    <svg class="hero__front" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" focusable="false" set:html={front} />
+  </div>
+  <canvas class="hero__atmo" data-atmo aria-hidden="true"></canvas>
+
+  <div class="hero__copy wide">
+    <p class="hero__kicker">data science · uc san diego</p>
+    <h1 class="hero__name" id="hero-name">{site.name}</h1>
+    <p class="hero__line">{site.headline}</p>
+  </div>
+
+  <a class="hero__down" href="#projects">
+    <span>projects</span>
+    <span class="hero__arrow" aria-hidden="true">↓</span>
+  </a>
+</section>
+
+<script>
+  import "../scripts/atmosphere";
+</script>

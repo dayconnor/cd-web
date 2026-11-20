@@ -1,0 +1,22 @@
+---
+import { vignette } from "../lib/scene";
+import { isoMonth, titleTransition, type Project } from "../lib/projects";
+
+interface Props { project: Project; feature?: boolean }
+const { project, feature = false } = Astro.props;
+const { title, summary, date, tools } = project.data;
+const inProgress = summary.startsWith("In progress");
+const desc = inProgress ? summary.replace(/^In progress\.\s*/, "") : summary;
+---
+<a class:list={["card", { "card--feature": feature }]} href={`/projects/${project.id}`}>
+  <div class="card__scene" style={`view-transition-name: scene-${project.id}; view-transition-class: scene`} set:html={vignette(project.id)} />
+  <div class="card__body">
+    <p class="card__meta">
+      <span class:list={["tag", { "tag--live": inProgress }]}>{inProgress ? "in progress" : "write-up"}</span>
+      <time datetime={isoMonth(date)}>{isoMonth(date)}</time>
+    </p>
+    <h3 class="card__title"><span style={`view-transition-name: ${titleTransition(project.id)}`}>{title}</span></h3>
+    <p class="card__desc">{desc}</p>
+    <p class="card__tools">{tools.join(" / ")}<span class="card__go" aria-hidden="true">→</span></p>
+  </div>
+</a>

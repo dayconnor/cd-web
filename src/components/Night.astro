@@ -1,0 +1,22 @@
+---
+// The streetlamp scene behind the header. Pure markup and CSS; the lamp sits
+// just outside the reading column on wide screens and tucks into the corner
+// on phones (see --pole-x in global.css).
+---
+<div class="night" aria-hidden="true">
+  <svg class="night__wire night__wire--l" viewBox="0 0 1000 150" preserveAspectRatio="none">
+    <path d="M0 20 Q520 84 1000 31" />
+    <path d="M0 33 Q520 100 1000 41" />
+  </svg>
+  <svg class="night__wire night__wire--r" viewBox="0 0 100 150" preserveAspectRatio="none">
+    <path d="M0 31 Q50 52 100 44" />
+    <path d="M0 41 Q50 66 100 58" />
+  </svg>
+  <div class="night__light"></div>
+  <div class="night__pole"></div>
+  <svg class="night__arm" viewBox="0 0 62 30">
+    <path d="M59 9 C44 1 24 1 9 10" />
+    <path d="M-1 11.5 Q5 6.5 13 11.5" />
+  </svg>
+  <div class="night__bulb"></div>
+</div>

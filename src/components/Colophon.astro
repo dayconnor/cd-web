@@ -1,0 +1,28 @@
+---
+// The page foot: links in the bottom left, the site in the bottom right, and
+// the photographer credit once credits.json names them (styles in site.css).
+import { site } from "../site";
+import { photographers } from "../lib/photos";
+
+const credits = photographers();
+const year = new Date().getFullYear();
+---
+<footer class="colophon">
+  <nav aria-label="Elsewhere">
+    <a href={site.github} target="_blank" rel="noopener">github</a>
+    <span aria-hidden="true">·</span>
+    <a href={site.linkedin} target="_blank" rel="noopener">linkedin</a>
+    <span aria-hidden="true">·</span>
+    <a href="/contact">email</a>
+    <span aria-hidden="true">·</span>
+    <a href="/rss.xml">rss</a>
+  </nav>
+  <span>connor.day · {year}</span>
+  {credits.length > 0 && (
+    <p class="credit">
+      photographs by {credits.map((c, i) => (
+        <>{i > 0 && (i === credits.length - 1 ? " and " : ", ")}{c.url ? <a href={c.url} target="_blank" rel="noopener">{c.credit}</a> : c.credit}</>
+      ))}, used with permission. thank you.
+    </p>
+  )}
+</footer>

@@ -1,0 +1,16 @@
+---
+// The name in the top left, small links in the top right (styles in site.css).
+import { site } from "../site";
+
+interface Props { current?: "home" | "projects" | "contact" }
+const { current } = Astro.props;
+---
+<header class="topbar">
+  <p class="name"><a href="/">connor day</a></p>
+  <nav aria-label="Site">
+    <a href="/#projects" aria-current={current === "projects" ? "page" : undefined}>projects</a>
+    <a href="/contact" aria-current={current === "contact" ? "page" : undefined}>contact</a>
+    <a href={site.cv} class="ext" target="_blank" rel="noopener">cv</a>
+    <a href={site.github} class="ext" target="_blank" rel="noopener">github</a>
+  </nav>
+</header>

@@ -1,0 +1,1183 @@
+/* ==========================================================================
+   connor.day: a softened winter photograph behind every page, lowercase
+   italic serif for names and titles, small mono for everything around them.
+   Plain CSS, no framework. The old scene design keeps its own stylesheet
+   (global.css), used only by /scene.
+   ========================================================================== */
+
+:root {
+  --bg: #0b0e13;
+  --veil: rgba(8, 12, 17, 0.9);   /* the dark the photo fades into for reading */
+  --ink: #e6ebf0;                 /* names, titles */
+  --ink-2: #d2d9e1;               /* body copy */
+  --ink-3: #c4ccd6;               /* long-form prose */
+  --muted: #a3adba;               /* small mono meta */
+  --faint: #8f99a7;
+  --rule: rgba(214, 222, 231, 0.14);
+  --rule-strong: rgba(214, 222, 231, 0.24);
+  --lamp: #f3f1e8;
+  --lamp-glow: rgba(243, 241, 232, 0.3);
+
+  --serif: var(--font-newsreader), Georgia, serif;
+  --sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+  --mono: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --pad-x: clamp(1.5rem, 6.4vw, 7rem);
+  --measure: 650px;
+  --wide: 820px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: 2rem;
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  margin: 0;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.6;
+  font-feature-settings: "kern", "calt";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+main {
+  flex: 1;
+}
+
+::selection {
+  background: rgba(239, 233, 213, 0.2);
+  color: var(--lamp);
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(220, 228, 236, 0.38);
+  text-underline-offset: 0.24em;
+  transition: color 0.25s ease, text-decoration-color 0.25s ease;
+}
+
+a:hover {
+  color: #fff;
+  text-decoration-color: rgba(220, 228, 236, 0.9);
+}
+
+:focus-visible {
+  outline: 1px solid rgba(228, 233, 239, 0.7);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 400;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -3rem;
+  z-index: 60;
+  padding: 0.4rem 0.75rem;
+  background: var(--bg);
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.skip:focus {
+  top: 1rem;
+}
+
+.ext::after {
+  content: " ↗";
+  font-size: 0.85em;
+}
+
+/* ------------------------------------------------------------- Backdrop --
+   The photograph behind each page: softened and flattened so no highlight is
+   harsh, then one even wash. The negative inset hides the soft edge the blur
+   leaves around the frame. It has the same view-transition name on every
+   page, so moving between pages dissolves one photograph into the next. */
+
+.backdrop {
+  position: absolute;
+  inset: -32px;
+  z-index: -2;
+  view-transition-name: backdrop;
+}
+
+.backdrop--fixed {
+  position: fixed;
+}
+
+.backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(7, 13, 21, 0.3);
+}
+
+.shot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.035);
+  transition: opacity 0.9s var(--ease), transform 2.4s var(--ease);
+  will-change: opacity, transform;
+}
+
+.shot--base {
+  opacity: 1;
+  transform: none;
+}
+
+.shot picture,
+.shot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.shot img {
+  object-fit: cover;
+  filter: blur(2.5px) brightness(0.8) contrast(0.93) saturate(0.95);
+}
+
+/* --------------------------------------------------------------- Topbar -- */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem 2rem;
+  padding: clamp(2.25rem, 7vh, 4rem) var(--pad-x) 0;
+}
+
+.name {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(1.55rem, 2.1vw, 2rem);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  line-height: 1.1;
+  view-transition-name: name;
+}
+
+.name a {
+  text-decoration: none;
+}
+
+.topbar nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.6rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+}
+
+.topbar nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.topbar nav a:hover,
+.topbar nav a[aria-current="page"] {
+  color: var(--ink);
+}
+
+/* ------------------------------------------------------------- Colophon -- */
+
+.colophon {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.6rem 2rem;
+  padding: 2.5rem var(--pad-x) clamp(2.25rem, 7vh, 4rem);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--faint);
+}
+
+.colophon nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.75rem;
+}
+
+.colophon a {
+  color: var(--ink-3);
+  text-decoration: none;
+}
+
+.colophon a:hover {
+  color: #fff;
+}
+
+.colophon .credit {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 11.5px;
+}
+
+.colophon .credit a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- Sheet --
+   One-screen pages (contact, 404): words in the bottom left, details in the
+   bottom right, the photograph open above them. */
+
+main:has(> .sheet) {
+  display: grid;
+}
+
+.sheet {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  align-content: end;
+  gap: 2.5rem 3rem;
+  padding: 3rem var(--pad-x) 0;
+}
+
+.sheet__words {
+  max-width: 40rem;
+}
+
+.kicker,
+.sheet__words .kicker {
+  margin: 0 0 1rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.kicker a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.kicker a:hover {
+  color: var(--ink);
+}
+
+.statement,
+.sheet__words .statement {
+  margin: 0 0 1.1rem;
+  font-size: clamp(2rem, 4.2vw, 3.4rem);
+  font-style: italic;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.sheet__words p {
+  margin: 0 0 0.6rem;
+  font-size: clamp(1.06rem, 1.3vw, 1.22rem);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.details {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.55rem 1.5rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  text-align: right;
+}
+
+.details dt {
+  color: var(--faint);
+}
+
+.details dd {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.details a {
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.details a:hover {
+  color: #fff;
+}
+
+.copy {
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: 12px var(--mono);
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.copy:hover,
+.copy[data-done] {
+  color: var(--ink);
+  border-color: rgba(228, 233, 239, 0.6);
+}
+
+/* -------------------------------------------------------------- Article --
+   The cover holds the photograph at full strength. Below it the page fades
+   to near black for reading, and the photograph comes back at the end. The
+   fade is a gradient behind the reading section, so scrolling costs nothing. */
+
+.cover {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  align-content: end;
+  gap: 2rem 3rem;
+  min-height: calc(100svh - 7rem);
+  padding: 3rem var(--pad-x) clamp(2.5rem, 8vh, 4.5rem);
+}
+
+.cover__words {
+  max-width: 46rem;
+}
+
+.cover h1 {
+  margin: 0 0 1.1rem;
+  font-size: clamp(2rem, 3.7vw, 3.15rem);
+  font-style: italic;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.dek {
+  max-width: 38rem;
+  margin: 0;
+  font-size: clamp(1.06rem, 1.3vw, 1.22rem);
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+
+.facts {
+  max-width: 24rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.facts a {
+  color: var(--ink-2);
+  text-decoration: none;
+}
+
+.facts a:hover {
+  color: #fff;
+}
+
+.reading {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, var(--wide)) minmax(0, 1fr);
+  column-gap: 3rem;
+  width: 100%;
+  max-width: calc(1180px + var(--pad-x) * 2);
+  padding: clamp(3rem, 10vh, 6rem) var(--pad-x) 4rem;
+}
+
+/* The dark behind the reading section. It reaches past the section at both
+   ends and fades there, so the cover dims into it and the outro lifts out. */
+.reading::before {
+  content: "";
+  position: absolute;
+  top: -22svh;
+  bottom: -30svh;
+  left: 0;
+  width: 100vw;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--veil) 22svh,
+    var(--veil) calc(100% - 30svh),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.reading > .prose {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Table of contents: the right margin on wide screens, right aligned like the
+   project list on the homepage. Sticky inside the reading section, so it
+   never sits over the cover or the end of the page. */
+.toc {
+  display: none;
+}
+
+@media (min-width: 1180px) {
+  .toc {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    align-self: start;
+    position: sticky;
+    top: 3rem;
+    width: 13rem;
+    margin-top: 0.4rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.45;
+    text-align: right;
+    scroll-target-group: auto;
+  }
+
+  .toc p {
+    margin: 0 0 0.85rem;
+    color: var(--faint);
+  }
+
+  .toc ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-right: 1px solid var(--rule);
+  }
+
+  .toc a {
+    display: block;
+    padding: 0.32rem 0.9rem 0.32rem 0;
+    margin-right: -1px;
+    border-right: 1px solid transparent;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .toc a:hover {
+    color: var(--ink);
+  }
+}
+
+/* Chrome 140+: highlights the section on screen, no JS. Its own block, so a
+   browser that doesn't know the selector skips only this. */
+@supports selector(:target-current) {
+  .toc a:target-current {
+    color: var(--ink);
+    border-right-color: var(--ink);
+  }
+}
+
+/* Reading progress: a hairline across the top, driven by scroll. */
+.progress {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .progress {
+    display: block;
+    position: fixed;
+    inset: 0 0 auto;
+    height: 1px;
+    z-index: 40;
+    background: var(--lamp);
+    box-shadow: 0 0 10px var(--lamp-glow);
+    transform-origin: 0 50%;
+    animation: progress linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Prose: text holds a 650px measure; figures, tables and plots step out to
+   820px on the right. */
+.prose {
+  display: grid;
+  grid-template-columns:
+    [content-start wide-start] minmax(0, var(--measure))
+    [content-end] minmax(0, calc(var(--wide) - var(--measure))) [wide-end];
+  font-size: 1.14rem;
+  line-height: 1.72;
+}
+
+.prose > * {
+  grid-column: content;
+}
+
+.prose > .table-wrap,
+.prose > p:has(> img:only-child),
+.prose > iframe {
+  grid-column: wide;
+}
+
+.prose p,
+.prose li {
+  color: var(--ink-3);
+}
+
+.prose p {
+  margin: 0 0 1.2rem;
+}
+
+.prose h2 {
+  position: relative;
+  margin: 3.4rem 0 1rem;
+  font-size: 1.75rem;
+  font-style: italic;
+  line-height: 1.2;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+
+.prose > h2:first-child {
+  margin-top: 0;
+}
+
+.prose h3 {
+  margin: 2.4rem 0 0.75rem;
+  font-size: 1.3rem;
+  font-style: italic;
+  color: var(--ink);
+}
+
+.prose .anchor {
+  position: absolute;
+  right: 100%;
+  padding-right: 0.55rem;
+  font-family: var(--mono);
+  font-size: 0.6em;
+  font-style: normal;
+  line-height: 2.2;
+  color: var(--faint);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.prose h2:hover .anchor,
+.prose .anchor:focus-visible {
+  opacity: 1;
+}
+
+.prose strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.prose em {
+  color: var(--ink);
+}
+
+.prose ul,
+.prose ol {
+  margin: 0 0 1.3rem;
+  padding-left: 1.3rem;
+}
+
+.prose li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.3rem;
+}
+
+.prose ul > li::marker {
+  content: "–  ";
+  color: var(--faint);
+  font-family: var(--mono);
+}
+
+.prose ol > li::marker {
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.8em;
+}
+
+.prose code {
+  padding: 0.1em 0.38em;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  font-family: var(--mono);
+  font-size: 0.76em;
+  color: var(--ink);
+}
+
+.prose blockquote {
+  margin: 0 0 1.3rem;
+  padding-left: 1.1rem;
+  border-left: 1px solid var(--rule-strong);
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+/* Figures keep their real colors (they encode data), sit slightly dimmed,
+   and come up to full brightness when hovered. */
+.prose p:has(> img:only-child) {
+  margin: 2rem 0 2.25rem;
+}
+
+.prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  background: #131820;
+  filter: brightness(0.88);
+  box-shadow: 0 0 0 1px rgba(239, 233, 213, 0.06);
+  transition: filter 0.4s ease;
+}
+
+.prose img:hover {
+  filter: none;
+}
+
+.prose iframe {
+  display: block;
+  width: 100%;
+  margin: 1.75rem 0 2.25rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: rgba(8, 11, 15, 0.6);
+  color-scheme: dark;
+}
+
+.table-wrap {
+  margin: 1.75rem 0 2.25rem;
+  overflow-x: auto;
+  border-block: 1px solid var(--rule-strong);
+}
+
+.table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.table-wrap th {
+  padding: 0.7rem 0.9rem;
+  border-bottom: 1px solid var(--rule-strong);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  text-align: left;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.table-wrap td {
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-3);
+  vertical-align: top;
+}
+
+.table-wrap tr:last-child td {
+  border-bottom: 0;
+}
+
+.table-wrap tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.table-wrap td strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* The end of a write-up: the photograph returns, with the older and newer
+   write-ups in opposite corners. */
+.outro {
+  display: grid;
+  align-content: end;
+  min-height: 62svh;
+  padding: 0 var(--pad-x);
+}
+
+.pager {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem 3rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pager .newer {
+  grid-column: 2;
+  text-align: right;
+}
+
+.pager a {
+  display: inline-block;
+  max-width: 26rem;
+  text-decoration: none;
+}
+
+.pager small {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.pager span {
+  font-size: clamp(1.25rem, 1.8vw, 1.6rem);
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--ink);
+  transition: opacity 0.4s var(--ease);
+}
+
+.pager:has(a:hover) li:not(:hover) span {
+  opacity: 0.45;
+}
+
+/* ------------------------------------------------------------------ Cat --
+   A CSS-only port of the old ASCII cat. It blinks, swishes its tail, watches
+   whatever link you hover, dozes off if left alone, and purrs when hovered.
+   Every state is a stacked frame shown with opacity. */
+
+.cat {
+  display: none;
+}
+
+@media (min-width: 1100px) and (hover: hover) {
+  .cat {
+    display: block;
+    position: fixed;
+    right: 1.75rem;
+    bottom: 1.4rem;
+    z-index: 30;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.18;
+    color: #6b7685;
+    white-space: pre;
+    cursor: default;
+    user-select: none;
+    transition: color 300ms ease;
+  }
+}
+
+.cat:hover {
+  color: var(--muted);
+}
+
+.cat .row {
+  display: block;
+}
+
+.cat .slot {
+  display: inline-grid;
+}
+
+.cat .slot--block {
+  display: grid;
+}
+
+.cat .slot > * {
+  grid-area: 1 / 1;
+}
+
+.cat .face {
+  color: var(--muted);
+}
+
+.cat .zzz,
+.cat .heart,
+.cat .f-blink,
+.cat .f-look,
+.cat .f-happy,
+.cat .f-sleep,
+.cat .t-r,
+.cat .t-u,
+.cat .t-l {
+  opacity: 0;
+}
+
+/* Idle loop: blink every few seconds, swish now and then. The two cycles use
+   different lengths so they drift apart and never feel mechanical. */
+.cat .f-open {
+  animation: hide-blink 5.3s infinite, doze-out 1ms 45s forwards;
+}
+
+.cat .f-blink {
+  animation: show-blink 5.3s infinite, doze-out 1ms 45s forwards;
+}
+
+.cat .t-d {
+  animation: hide-swish 11.7s infinite, doze-in 1ms 45s forwards;
+}
+
+.cat .t-r { animation: swish-r 11.7s infinite, doze-out 1ms 45s forwards; }
+.cat .t-u { animation: swish-u 11.7s infinite, doze-out 1ms 45s forwards; }
+.cat .t-l { animation: swish-l 11.7s infinite, doze-out 1ms 45s forwards; }
+
+.cat .f-sleep,
+.cat .zzz {
+  animation: doze-in 1ms 45s forwards;
+}
+
+.cat .zzz i {
+  display: inline-block;
+  width: 3ch;
+  overflow: hidden;
+  font-style: normal;
+  vertical-align: bottom;
+  animation: snore 3.2s steps(3, jump-none) infinite;
+}
+
+@keyframes show-blink {
+  0%, 93%, 100% { opacity: 0; }
+  93.1%, 96% { opacity: 1; }
+}
+
+@keyframes hide-blink {
+  0%, 93%, 100% { opacity: 1; }
+  93.1%, 96% { opacity: 0; }
+}
+
+@keyframes hide-swish {
+  0%, 74.9% { opacity: 1; }
+  75%, 99.9% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes swish-r {
+  0%, 74.9%, 81.25%, 100% { opacity: 0; }
+  75%, 81.2% { opacity: 1; }
+}
+
+@keyframes swish-u {
+  0%, 81.2%, 87.5%, 93.7%, 100% { opacity: 0; }
+  81.25%, 87.45%, 93.75%, 99.9% { opacity: 1; }
+}
+
+@keyframes swish-l {
+  0%, 87.45%, 93.75%, 100% { opacity: 0; }
+  87.5%, 93.7% { opacity: 1; }
+}
+
+@keyframes doze-in {
+  to { opacity: 1; }
+}
+
+@keyframes doze-out {
+  to { opacity: 0; }
+}
+
+@keyframes snore {
+  from { width: 1ch; }
+  to { width: 3ch; }
+}
+
+@keyframes wag-r {
+  0%, 24.9% { opacity: 1; }
+  25%, 100% { opacity: 0; }
+}
+
+@keyframes wag-u {
+  0%, 24.9%, 50%, 74.9% { opacity: 0; }
+  25%, 49.9%, 75%, 100% { opacity: 1; }
+}
+
+@keyframes wag-l {
+  0%, 49.9%, 75%, 100% { opacity: 0; }
+  50%, 74.9% { opacity: 1; }
+}
+
+/* Watching: hovering any link resets the doze timer and the cat looks over
+   toward the page. */
+body:has(a:hover) .cat :is(.f-open, .f-blink, .f-sleep, .zzz, .t-d, .t-r, .t-u, .t-l) {
+  animation: none;
+}
+
+body:has(a:hover) .cat .f-open {
+  opacity: 0;
+}
+
+body:has(a:hover) .cat .f-look {
+  opacity: 1;
+}
+
+/* Petting: hover the cat. */
+.cat:hover :is(.f-open, .f-blink, .f-look, .f-sleep, .zzz, .t-d) {
+  animation: none;
+  opacity: 0;
+}
+
+.cat:hover .f-happy,
+.cat:hover .heart {
+  opacity: 1;
+}
+
+.cat:hover .heart {
+  color: var(--lamp);
+  text-shadow: 0 0 10px var(--lamp-glow);
+}
+
+.cat:hover .t-r { animation: wag-r 1.1s infinite; }
+.cat:hover .t-u { animation: wag-u 1.1s infinite; }
+.cat:hover .t-l { animation: wag-l 1.1s infinite; }
+
+/* The cat sits in the bottom right corner on wide screens; keep the cover
+   facts and the colophon clear of it. */
+@media (min-width: 1100px) and (hover: hover) {
+  .facts {
+    margin-bottom: 4.5rem;
+  }
+
+  .colophon {
+    padding-right: calc(var(--pad-x) + 8.5rem);
+  }
+
+  .outro {
+    padding-bottom: 1.75rem;
+  }
+
+  .details {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* ------------------------------------------------- Page transitions (MPA) --
+   Same-origin navigations cross-fade natively. The photograph and the name
+   keep their own names, so the photo dissolves into the next page's photo
+   and the name slides into place while the rest of the page fades. */
+
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root) {
+  animation: 180ms ease both vt-out;
+}
+
+::view-transition-new(root) {
+  animation: 320ms var(--ease) both vt-in;
+}
+
+::view-transition-group(name) {
+  animation-duration: 480ms;
+  animation-timing-function: var(--ease);
+}
+
+::view-transition-group(backdrop) {
+  animation-duration: 700ms;
+}
+
+::view-transition-old(backdrop),
+::view-transition-new(backdrop) {
+  height: 100%;
+  object-fit: cover;
+  animation-duration: 700ms;
+  animation-timing-function: ease;
+}
+
+@keyframes vt-out {
+  to { opacity: 0; }
+}
+
+@keyframes vt-in {
+  from { opacity: 0; transform: translateY(6px); }
+}
+
+/* ---------------------------------------------------------------- Mobile -- */
+
+@media (max-width: 760px) {
+  .cover,
+  .sheet {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cover {
+    min-height: calc(100svh - 6rem);
+  }
+
+  .facts,
+  .details {
+    text-align: left;
+  }
+
+  .details {
+    grid-template-columns: auto 1fr;
+  }
+
+  .reading {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .prose .anchor {
+    display: none;
+  }
+
+  .pager {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pager .newer {
+    grid-column: 1;
+    grid-row: 1;
+  }
+}
+
+/* ----------------------------------------------------------- Accessibility -- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .shot {
+    transform: none;
+  }
+
+  .cat *,
+  .zzz i {
+    animation: none !important;
+  }
+
+  @view-transition {
+    navigation: none;
+  }
+}
+
+/* ------------------------------------------------------------------ Print --
+   Write-ups get printed. Black on white, with the real URLs spelled out. */
+
+@media print {
+  :root {
+    color-scheme: light;
+  }
+
+  html,
+  body {
+    background: #fff;
+    color: #111;
+    font-size: 11pt;
+  }
+
+  .backdrop,
+  .snow,
+  .topbar nav,
+  .toc,
+  .progress,
+  .outro,
+  .colophon,
+  .cat,
+  .skip {
+    display: none !important;
+  }
+
+  .cover {
+    min-height: 0;
+    padding: 0 0 1.5rem;
+  }
+
+  .reading {
+    padding: 0;
+  }
+
+  .reading::before {
+    display: none;
+  }
+
+  h1, h2, h3, .name, .dek, .prose p, .prose li, .prose strong, .table-wrap td {
+    color: #111;
+  }
+
+  .facts, .kicker, .table-wrap th {
+    color: #555;
+  }
+
+  a {
+    color: #111;
+  }
+
+  .prose a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #555;
+  }
+
+  .prose img {
+    filter: none;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .prose iframe {
+    display: none;
+  }
+
+  .prose code {
+    background: #f3f3f3;
+    border-color: #ddd;
+    color: #111;
+  }
+}

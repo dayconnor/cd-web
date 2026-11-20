@@ -1,11 +1,12 @@
-export const metadata = {
-  title: "Does thyroid function predict metabolic health? Tested against NHANES data",
-  date: "2026-08-29",
-  summary:
-    "A survey-weighted analysis of NHANES thyroid panels testing Ray Peat's bioenergetic hypotheses. Three of four pre-registered predictions were falsified, and every significant result ran opposite to what the framework predicts.",
-  tools: ["Python", "Pandas", "Polars", "statsmodels", "scikit-learn", "Matplotlib"],
-  repo: "https://github.com/dayconnor/nhanes-bioenergetics",
-};
+---
+title: "Does thyroid function predict metabolic health? Tested against NHANES data"
+label: "nhanes bioenergetics"
+photo: "alley"
+date: 2026-08-29
+summary: "A survey-weighted analysis of NHANES thyroid panels testing Ray Peat's bioenergetic hypotheses. Three of four pre-registered predictions were falsified, and every significant result ran opposite to what the framework predicts."
+tools: ["Python","Pandas","Polars","statsmodels","scikit-learn","Matplotlib"]
+repo: https://github.com/dayconnor/nhanes-bioenergetics
+---
 
 In this project, I tested some claims derived from the thinkings and opinions of Ray Peat, 
 a prominent researcher with a Ph.D. in biology from the University of Oregon, and some opinions 
@@ -91,15 +92,9 @@ but it wasn't significant (+4.5 mg/dL per pg/mL, p = 0.094). If the one
 implausible record is kept in, H2 and H3 lose significance, but none of the
 verdicts change.
 
-<img
-  src="/projects/bioenergetics/summary_all_hypotheses.png"
-  alt="Primary coefficient across all four hypotheses"
-/>
+![Primary coefficient across all four hypotheses](../../assets/projects/bioenergetics/summary_all_hypotheses.png)
 
-<img
-  src="/projects/bioenergetics/multiplicity_correction.png"
-  alt="Raw vs. corrected p-values across all four hypotheses"
-/>
+![Raw vs. corrected p-values across all four hypotheses](../../assets/projects/bioenergetics/multiplicity_correction.png)
 
 ## My thoughts
 

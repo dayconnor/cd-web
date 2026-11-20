@@ -1,0 +1,356 @@
+---
+// The homepage is one screen: a softened photograph, the bio in the top left,
+// and the work in the bottom right, balanced across the open middle.
+// Hovering or focusing a project crossfades the photograph to that project's
+// own and fades its description in above the list. All of that is CSS; the
+// only script is the faint snowfall in front of the photo.
+import "../styles/site.css";
+import Base from "../layouts/Base.astro";
+import Backdrop from "../components/Backdrop.astro";
+import { getProjects, projectPhoto } from "../lib/projects";
+import { getPhoto } from "../lib/photos";
+import { site } from "../site";
+
+const projects = await getProjects();
+const base = getPhoto("road");
+
+const work = projects.map((p) => {
+  const live = p.data.summary.startsWith("In progress");
+  return {
+    id: p.id,
+    href: `/projects/${p.id}`,
+    label: p.data.label,
+    year: p.data.date.getUTCFullYear(),
+    live,
+    desc: p.data.summary.replace(/^In progress\.\s*/, ""),
+    photo: projectPhoto(p),
+  };
+});
+
+const shots = work.flatMap((w) => {
+  const photo = w.photo ? getPhoto(w.photo) : undefined;
+  return photo ? [{ id: w.id, image: photo.image, focus: photo.info?.focus }] : [];
+});
+
+// One rule per project: while its title is hovered or focused, its photograph
+// shows. Written out here because CSS can't compare two attribute values.
+const crossfade = shots
+  .map((s) => `.nocturne:has([data-p="${s.id}"]:is(:hover,:focus-within)) .shot[data-for="${s.id}"]{opacity:1;transform:none}`)
+  .join("");
+
+const credit = base?.info?.credit ? base.info : undefined;
+
+const person = {
+  "@type": "Person",
+  name: site.name,
+  url: site.url,
+  jobTitle: site.role,
+  affiliation: { "@type": "CollegeOrUniversity", name: "University of California, San Diego" },
+  sameAs: [site.github, site.linkedin],
+};
+
+---
+<Base jsonLd={person} bare>
+  <div class="nocturne">
+    <Backdrop name="road" extras={shots} />
+    <canvas class="snow" data-atmo aria-hidden="true"></canvas>
+
+    <header class="intro">
+      <h1 class="name">connor day</h1>
+      <p class="bio">
+        studying data science at <a href="https://ucsd.edu" target="_blank" rel="noopener">uc san diego</a>,
+        focused on <a href={site.github} target="_blank" rel="noopener">empirical tools</a>, statistical
+        computation, and software systems. developing tools to analyze <span class="nowrap">high-dimensional</span> datasets.
+      </p>
+    </header>
+
+    <p class="where">san diego · bay area</p>
+
+    <nav class="work" id="projects" aria-label="Projects">
+      <ul>
+        {work.map((w) => (
+          <li data-p={w.id}>
+            <a href={w.href} aria-describedby={`d-${w.id}`}>
+              <span class="title">{w.label}</span>
+              <span class="year">{w.year}</span>
+            </a>
+            <p class="desc" id={`d-${w.id}`} aria-hidden="true">
+              {w.live && <span class="live">in progress · </span>}{w.desc}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <footer class="links">
+      <a href={site.github} target="_blank" rel="noopener">github</a>
+      <span aria-hidden="true">·</span>
+      <a href="/contact">email</a>
+      <span aria-hidden="true">·</span>
+      <a href={site.cv} target="_blank" rel="noopener">cv</a>
+      {credit && (
+        <small class="credit">
+          photo · {credit.url ? <a href={credit.url} target="_blank" rel="noopener">{credit.credit}</a> : credit.credit}
+        </small>
+      )}
+    </footer>
+  </div>
+
+  <style is:inline set:html={crossfade}></style>
+  <script>import "../scripts/atmosphere";</script>
+</Base>
+
+<style>
+  .nocturne {
+    --pad-x: clamp(1.5rem, 6.4vw, 7rem);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr auto;
+    column-gap: 3rem;
+    padding: clamp(4.5rem, 14vh, 8.5rem) var(--pad-x) clamp(2.25rem, 8vh, 5rem);
+    background: #0b0e13;
+    color: #e4e9ef;
+    font-family: var(--serif);
+  }
+
+  .snow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 2.4s ease;
+  }
+
+  .snow:global(.is-on) {
+    opacity: 0.9;
+  }
+
+  /* Top left */
+  .intro {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: 35rem;
+  }
+
+  .name {
+    margin: 0 0 1.35rem;
+    font-size: clamp(1.55rem, 2.1vw, 2rem);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+    line-height: 1.1;
+  }
+
+  .bio {
+    margin: 0;
+    font-size: clamp(1.06rem, 1.3vw, 1.22rem);
+    line-height: 1.62;
+    color: #d2d9e1;
+    text-wrap: pretty;
+  }
+
+  .nowrap {
+    white-space: nowrap;
+  }
+
+  .bio a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: rgba(220, 228, 236, 0.38);
+    text-underline-offset: 0.24em;
+    transition: text-decoration-color 0.3s ease;
+  }
+
+  .bio a:hover {
+    text-decoration-color: rgba(220, 228, 236, 0.9);
+  }
+
+  /* Top right */
+  .where {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0.55rem 0 0;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    color: #a3adba;
+    text-align: right;
+  }
+
+  /* Bottom right */
+  .work {
+    grid-column: 2;
+    grid-row: 3;
+    align-self: end;
+    position: relative;
+  }
+
+  .work ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .work li + li {
+    margin-top: 0.3rem;
+  }
+
+  .work a {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 1.35rem;
+    padding: 0.15rem 0;
+    color: #e6ebf0;
+    text-decoration: none;
+    transition: opacity 0.45s var(--ease);
+  }
+
+  .title {
+    font-size: clamp(1.4rem, 2.05vw, 1.9rem);
+    font-style: italic;
+    line-height: 1.3;
+    letter-spacing: -0.005em;
+  }
+
+  .year {
+    flex: none;
+    width: 2.6rem;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: #a3adba;
+    text-align: right;
+  }
+
+  /* Hovering one title quiets the others. */
+  .work ul:has(a:hover, a:focus-visible) li:not(:hover, :focus-within) a {
+    opacity: 0.4;
+  }
+
+  .work a:focus-visible {
+    outline: 1px solid rgba(228, 233, 239, 0.6);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  /* The hovered project's description, set above the list and aligned to it. */
+  .desc {
+    position: absolute;
+    right: calc(2.6rem + 1.35rem);
+    bottom: calc(100% + 1.75rem);
+    width: min(23rem, 70vw);
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #c4ccd6;
+    text-align: right;
+    text-wrap: pretty;
+    opacity: 0;
+    translate: 0 6px;
+    pointer-events: none;
+    transition: opacity 0.4s var(--ease), translate 0.6s var(--ease);
+  }
+
+  .live {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.03em;
+    color: #a3adba;
+  }
+
+  .work li:is(:hover, :focus-within) .desc {
+    opacity: 1;
+    translate: 0 0;
+    transition-delay: 0.08s;
+  }
+
+  /* Bottom left */
+  .links {
+    grid-column: 1;
+    grid-row: 3;
+    align-self: end;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 0.75rem;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: #8f99a7;
+  }
+
+  .links a {
+    color: #c8d0d9;
+    text-decoration: none;
+    transition: color 0.25s ease;
+  }
+
+  .links a:hover {
+    color: #fff;
+  }
+
+  .credit {
+    flex-basis: 100%;
+    font-size: 11.5px;
+    color: #8f99a7;
+  }
+
+  .credit a {
+    color: inherit;
+  }
+
+  /* The ASCII cat sits in the bottom right corner on wide screens; lift the
+     list clear of it. */
+  @media (min-width: 1100px) and (hover: hover) {
+    .work {
+      margin-bottom: 4.5rem;
+    }
+  }
+
+  @media (hover: none) {
+    .desc {
+      display: none;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .nocturne {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto 1fr auto auto;
+      padding-top: clamp(3.5rem, 11vh, 5rem);
+    }
+
+    .where {
+      grid-column: 1;
+      grid-row: 2;
+      margin-top: 1.4rem;
+      text-align: left;
+    }
+
+    .work {
+      grid-column: 1;
+      grid-row: 4;
+      justify-self: end;
+      margin-top: 3rem;
+    }
+
+    .links {
+      grid-row: 5;
+      margin-top: 2.5rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .work a,
+    .desc {
+      transition-duration: 0.01s;
+    }
+  }
+</style>

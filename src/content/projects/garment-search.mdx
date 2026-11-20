@@ -1,11 +1,12 @@
-export const metadata = {
-  title: "Text-to-Image Search for Clothing with FashionCLIP and CLIP",
-  date: "2026-10-05",
-  summary:
-    "Text-to-image search over 45,622 Fashionpedia clothing images, comparing FashionCLIP and CLIP with a pre-registered evaluation and 391 hand judgments made blind to model and rank.",
-  tools: ["Python", "PyTorch", "Hugging Face Transformers", "FAISS", "Pandas", "NumPy"],
-  repo: "https://github.com/dayconnor/garment-search",
-};
+---
+title: "Text-to-Image Search for Clothing with FashionCLIP and CLIP"
+label: "garment search"
+photo: "footpath"
+date: 2026-10-05
+summary: "Text-to-image search over 45,622 Fashionpedia clothing images, comparing FashionCLIP and CLIP with a pre-registered evaluation and 391 hand judgments made blind to model and rank."
+tools: ["Python","PyTorch","Hugging Face Transformers","FAISS","Pandas","NumPy"]
+repo: https://github.com/dayconnor/garment-search
+---
 
 ## What I did
 
@@ -82,11 +83,7 @@ The pass thresholds were set in advance on capped recall@10: 0.80 for Tier A,
 | B: garment plus attribute | 0.50 | 0.60, pass | 0.41, **fail** |
 | C: combinations | 0.30 | 0.23, **fail** | 0.23, **fail** |
 
-<img
-  src="/projects/garment-search/tier_recall.png"
-  alt="Capped recall@10 by tier for FashionCLIP and CLIP against the pre-registered thresholds"
-  style={{ maxHeight: "400px", width: "auto", margin: "0 auto 1.25rem" }}
-/>
+![Capped recall@10 by tier for FashionCLIP and CLIP against the pre-registered thresholds](../../assets/projects/garment-search/tier_recall.png)
 
 FashionCLIP beat CLIP on 8 of the 16 graded queries, lost on 3, and tied on 5.
 Sixteen queries is too few for a significance test, so I'm treating this as a
@@ -96,11 +93,7 @@ My hand judging put the models in the same order on every tier. Strict
 precision@10 for FashionCLIP and CLIP was 0.92 and 0.76 on Tier A, 0.83 and
 0.51 on Tier B, 0.33 and 0.28 on Tier C, and 0.85 and 0.57 on Tier D.
 
-<img
-  src="/projects/garment-search/manual_precision.png"
-  alt="Strict and lenient manual precision@10 by tier for FashionCLIP and CLIP"
-  style={{ maxHeight: "400px", width: "auto", margin: "0 auto 1.25rem" }}
-/>
+![Strict and lenient manual precision@10 by tier for FashionCLIP and CLIP](../../assets/projects/garment-search/manual_precision.png)
 
 The queries with the most misses:
 
@@ -121,22 +114,14 @@ attaches the "sleeveless" attribute to sleeves, and a sleeveless dress doesn't
 have one to attach it to. Of the 19 judged images the labels missed for this
 query, 18 were clearly sleeveless dresses.
 
-<img
-  src="/projects/garment-search/sparsity_gap.png"
-  alt="Strict manual precision@10 minus capped recall@10 for each query"
-  style={{ maxHeight: "400px", width: "auto", margin: "0 auto 1.25rem" }}
-/>
+![Strict manual precision@10 minus capped recall@10 for each query](../../assets/projects/garment-search/sparsity_gap.png)
 
 I predicted Tier D would fail, and it mostly didn't. FashionCLIP scored 1.0 on
 `monochrome black outfit`, 1.0 on `business casual office outfit`, and 0.9 on
 the beach query. CLIP came in lower on all three at 0.8, 0.7, and 0.3. The one
 pure style query, `goth outfit`, landed at 0.5 for both.
 
-<img
-  src="/projects/garment-search/tier_d.png"
-  alt="Strict manual precision@10 for the four color, occasion, and style queries"
-  style={{ maxHeight: "400px", width: "auto", margin: "0 auto 1.25rem" }}
-/>
+![Strict manual precision@10 for the four color, occasion, and style queries](../../assets/projects/garment-search/tier_d.png)
 
 A few caveats. I was the only judge, there are only 20 queries, and each one is
 graded on 10 images, so a 0.1 difference on a single query means one image.

@@ -1,0 +1,8 @@
+---
+// Links to other sites open in a new tab; links within the site do not.
+const { href = "", ...rest } = Astro.props as { href?: string; [k: string]: unknown };
+const external = /^https?:\/\//.test(href);
+---
+{external
+  ? <a href={href} target="_blank" rel="noopener" {...rest}><slot /></a>
+  : <a href={href} {...rest}><slot /></a>}

@@ -1,0 +1,32 @@
+---
+// A credited photograph that dissolves into the page at its edges. Renders
+// nothing until the file exists (see lib/photos.ts).
+import { Picture } from "astro:assets";
+import { getPhoto } from "../lib/photos";
+
+interface Props { name: string; variant?: "band" | "banner" | "closer"; eager?: boolean }
+const { name, variant = "band", eager = false } = Astro.props;
+const photo = getPhoto(name);
+---
+{photo && (
+  <figure class:list={["photo", `photo--${variant}`]}>
+    <Picture
+      src={photo.image}
+      formats={["avif"]}
+      widths={[640, 1100, 1600, 2200]}
+      sizes="100vw"
+      quality={62}
+      alt={photo.info?.alt ?? ""}
+      loading={eager ? "eager" : "lazy"}
+      fetchpriority={eager ? "high" : "auto"}
+      style={photo.info?.focus ? `object-position: ${photo.info.focus}` : undefined}
+    />
+    {photo.info?.credit && (
+      <figcaption>
+        photo · {photo.info.url
+          ? <a href={photo.info.url} target="_blank" rel="noopener">{photo.info.credit}</a>
+          : photo.info.credit}
+      </figcaption>
+    )}
+  </figure>
+)}

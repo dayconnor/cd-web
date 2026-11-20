@@ -1,0 +1,5 @@
+---
+// MDX h2 with a hover anchor, so any section can be linked directly.
+const { id } = Astro.props as { id?: string };
+---
+<h2 id={id}>{id && <a class="anchor" href={`#${id}`} aria-hidden="true" tabindex="-1">#</a>}<slot /></h2>

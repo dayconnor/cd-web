@@ -1,0 +1,27 @@
+---
+import { site } from "../site";
+import { photographers } from "../lib/photos";
+const credits = photographers();
+const year = new Date().getFullYear();
+---
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>connor.day · {year}</span>
+      <div class="footer-links">
+        <a href={site.github} target="_blank" rel="noopener">github</a>
+        <a href={site.linkedin} target="_blank" rel="noopener">linkedin</a>
+        <a href="/contact">email</a>
+        <a href="/rss.xml">rss</a>
+      </div>
+    </div>
+    {credits.length > 0 && (
+      <p class="footer-credits">
+        photographs by {credits.map((c, i) => (
+          <>{i > 0 && (i === credits.length - 1 ? " and " : ", ")}{c.url ? <a href={c.url} target="_blank" rel="noopener">{c.credit}</a> : c.credit}</>
+        ))}, used with permission. thank you.
+      </p>
+    )}
+  </div>
+  <div class="treeline" aria-hidden="true"></div>
+</footer>

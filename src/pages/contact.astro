@@ -1,0 +1,45 @@
+---
+import "../styles/site.css";
+import Base from "../layouts/Base.astro";
+import { site } from "../site";
+---
+<Base title="Contact" description={`Email and location for ${site.name}.`} current="contact" photo="lamp">
+  <section class="sheet">
+    <div class="sheet__words">
+      <h1 class="kicker">contact</h1>
+      <p class="statement">
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+      <button class="copy" type="button" data-copy={site.email} hidden>copy address</button>
+    </div>
+
+    <dl class="details">
+      <dt>location</dt>
+      <dd>san diego · bay area</dd>
+      <dt>github</dt>
+      <dd><a href={site.github} class="ext" target="_blank" rel="noopener">{site.github.replace(/^https?:\/\//, "")}</a></dd>
+      <dt>linkedin</dt>
+      <dd><a href={site.linkedin} class="ext" target="_blank" rel="noopener">{site.linkedin.replace(/^https?:\/\//, "")}</a></dd>
+      <dt>cv</dt>
+      <dd><a href={site.cv} class="ext" target="_blank" rel="noopener">pdf</a></dd>
+    </dl>
+  </section>
+
+  <!-- Reveals the copy button where the Clipboard API exists. Without it the
+       address is still a plain mailto link. -->
+  <script is:inline>
+    (() => {
+      const b = document.querySelector("[data-copy]");
+      if (!b || !navigator.clipboard) return;
+      b.hidden = false;
+      b.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(b.dataset.copy);
+          b.textContent = "copied";
+          b.dataset.done = "";
+          setTimeout(() => { b.textContent = "copy address"; delete b.dataset.done; }, 2000);
+        } catch {}
+      });
+    })();
+  </script>
+</Base>

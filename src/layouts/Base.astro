@@ -1,0 +1,135 @@
+---
+// Pages import their own stylesheet: site.css for the current design,
+// global.css for the old scene kept at /scene. So each page inlines only
+// the rules it uses.
+import { Font } from "astro:assets";
+import Night from "../components/Night.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import Backdrop from "../components/Backdrop.astro";
+import Topbar from "../components/Topbar.astro";
+import Colophon from "../components/Colophon.astro";
+import Cat from "../components/Cat.astro";
+import { site } from "../site";
+
+interface Props {
+  title?: string;          // page part of the tab title; omitted on home
+  description?: string;
+  ogImage?: string;        // path under /og/
+  type?: "website" | "article";
+  current?: "home" | "projects" | "contact";
+  jsonLd?: object;
+  photo?: string;          // photograph behind the page (see lib/photos.ts)
+  bare?: boolean;          // the page draws everything itself (home)
+  hero?: boolean;          // old design: full-screen SVG scene (/scene only)
+  night?: boolean;         // old design: lamp-and-wires scene behind the header
+  noindex?: boolean;
+  published?: Date;
+}
+
+const {
+  title,
+  description = site.description,
+  ogImage = "/og/home.png",
+  type = "website",
+  current,
+  jsonLd,
+  published,
+  photo,
+  hero = false,
+  bare = false,
+  night = !hero,
+  noindex = false,
+} = Astro.props;
+
+const fullTitle = title ? `${site.name} | ${title}` : `${site.name} | Home`;
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, "") || "/", site.url).href;
+const image = new URL(ogImage, site.url).href;
+
+// Speculation Rules: Chrome and Edge fully prerender a same-site page once the
+// pointer rests on its link (or it's tapped), so the click itself is instant.
+// It's a JSON hint for the browser, not script, and other browsers ignore it.
+const speculation = JSON.stringify({
+  prerender: [
+    {
+      where: {
+        and: [
+          { href_matches: "/*" },
+          { not: { href_matches: ["/*.pdf", "/*.xml", "/projects/power-outages/*"] } },
+        ],
+      },
+      eagerness: "moderate",
+    },
+  ],
+});
+
+const ld = jsonLd
+  ? JSON.stringify({ "@context": "https://schema.org", ...jsonLd }).replace(/</g, "\\u003c")
+  : null;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#080a0d" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
+
+    <Font cssVariable="--font-inter" preload={hero ? [{ weight: 400, style: "normal" }] : false} />
+    <Font
+      cssVariable="--font-newsreader"
+      preload={hero ? [{ weight: 400, style: "normal" }] : [{ weight: 400, style: "normal" }, { weight: 400, style: "italic" }]}
+    />
+    <Font cssVariable="--font-mono" preload />
+    {hero && <Font cssVariable="--font-display" preload />}
+
+    <meta property="og:type" content={type} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={title ?? `${site.name} | Data Science Student at UC San Diego`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {published && <meta property="article:published_time" content={published.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="speculationrules" is:inline set:html={speculation} />
+    {ld && <script type="application/ld+json" is:inline set:html={ld} />}
+  </head>
+  <body>
+    <a class="skip" href="#main">skip to content</a>
+    {bare ? (
+      <main id="main">
+        <slot />
+      </main>
+    ) : hero ? (
+      <>
+        {night && <Night />}
+        <Header current={current} overlay />
+        <slot name="hero" />
+        <main id="main" class="wrap wrap--home">
+          <slot />
+        </main>
+        <Footer />
+      </>
+    ) : (
+      <>
+        {photo && <Backdrop name={photo} fixed />}
+        <Topbar current={current} />
+        <main id="main">
+          <slot />
+        </main>
+        <Colophon />
+      </>
+    )}
+    <Cat />
+  </body>
+</html>
